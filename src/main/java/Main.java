@@ -4,7 +4,7 @@ import java.net.UnknownHostException;
 public class Main {
 
     public static void main(String[] args) throws SocketException, UnknownHostException {
-        Rede p2p = new Rede();
+        Rede p2p = Rede.getInstance();
         new Thread(() -> {
             while (true) {
                 try {

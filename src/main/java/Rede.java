@@ -1,22 +1,26 @@
 import java.io.IOException;
 import java.net.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 public class Rede {
-    List<Peer> peers;
+    private static Rede instance = null;
+    Map<String,Peer> peers;
 
-    public Rede() {
-        this.peers = new ArrayList<>();
+
+    public static Rede getInstance(){
+        if (instance == null){
+            instance = new Rede();
+        }
+        return instance;
+    }
+
+    private Rede() {
+        this.peers = new TreeMap<>();
         receiveMulticast();
     }
 
 
     /**
-     *
-     *
      * @param group MULTICAST ADDRESS
      * @return Lista de endereços na rede
      */
@@ -64,9 +68,7 @@ public class Rede {
 
                     //bloqueia a espera de um host
                     ms.receive(dp);
-                    String s = new String(dp.getData(), 0, dp.getLength());
-                    String addr = dp.getAddress().toString();
-                    System.out.println("Receive message " + s + " from " + addr);
+                    Multiplexer.receive(dp);
                 }
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -78,7 +80,7 @@ public class Rede {
     public void sendHellos() throws IOException {
         List<InetAddress> addrs = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS));
         String msg = "HELLO";
-        System.out.println("\nSending the message: " + msg);
+        //System.out.println("\nSending the message: " + msg);
         MulticastSocket ms = new MulticastSocket();
         DatagramPacket dp = new DatagramPacket(
                 msg.getBytes(),
@@ -86,12 +88,23 @@ public class Rede {
                 InetAddress.getByName(Variables.MULTICAST_ADDRESS),
                 Variables.MULTICAST_PORT);
 
-        for (InetAddress addr: addrs) {
-            System.out.println("Sending on " + addr);
+        for (InetAddress addr : addrs) {
+            //System.out.println("Sending on " + addr);
             ms.setInterface(addr);
             ms.send(dp);
         }
         ms.close();
+    }
+
+    public void addPeer(Peer peer){
+        if (!peers.containsKey(peer.getEndereco().toString())){
+            peers.put(peer.getEndereco().toString(),peer);
+            System.out.println("Add peer: "+peer.getEndereco().toString());
+        }else {
+            peers.remove(peer.getEndereco().toString());
+            peers.put(peer.getEndereco().toString(),peer);
+            System.out.println("Updated peer: "+peer.getEndereco().toString());
+        }
     }
 
 

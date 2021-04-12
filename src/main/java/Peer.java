@@ -2,8 +2,8 @@ import java.net.InetAddress;
 import java.time.LocalDateTime;
 
 public class Peer {
-    InetAddress endereco;
-    LocalDateTime dataCriacao; //opcional
+    private InetAddress endereco;
+    private LocalDateTime dataCriacao; //opcional
 
     public Peer(InetAddress endereco, LocalDateTime dataCriacao) {
         this.endereco = endereco;
