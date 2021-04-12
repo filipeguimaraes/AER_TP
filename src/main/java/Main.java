@@ -8,8 +8,8 @@ public class Main {
         new Thread(() -> {
             while (true) {
                 try {
-                    p2p.refreshPeers();
-                    Thread.sleep(1000);
+                    p2p.sendHellos();
+                    Thread.sleep(2000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

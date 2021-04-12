@@ -15,7 +15,7 @@ public class Rede {
 
 
     /**
-     * Encontra endereços na rede p2p
+     *
      *
      * @param group MULTICAST ADDRESS
      * @return Lista de endereços na rede
@@ -49,38 +49,49 @@ public class Rede {
         return result;
     }
 
-    public void refreshPeers() throws UnknownHostException, SocketException {
-        List<InetAddress> enderecos = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS));
-        for (InetAddress e: enderecos) {
-            Peer peer = new Peer(e, LocalDateTime.now());
-            //this.peers.add(peer);
-            System.out.println("Peer adicionado: "+peer.getEndereco()+" :: "+peer.getDataCriacao());
-        }
 
-    }
-
-    public void receiveMulticast(){
-        new Thread(() ->{
+    public void receiveMulticast() {
+        new Thread(() -> {
             try {
                 InetAddress group = InetAddress.getByName(Variables.MULTICAST_ADDRESS);
 
                 MulticastSocket ms = new MulticastSocket(Variables.MULTICAST_PORT);
                 ms.joinGroup(group);
                 byte[] buffer = new byte[8192];
-                while(true){
-                    System.out.println("Waiting for a multicast message sent to"+Variables.MULTICAST_ADDRESS);
+                while (true) {
+                    //System.out.println("Waiting for a multicast message sent to" + Variables.MULTICAST_ADDRESS);
                     DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
 
+                    //bloqueia a espera de um host
                     ms.receive(dp);
                     String s = new String(dp.getData(), 0, dp.getLength());
                     String addr = dp.getAddress().toString();
-                    System.out.println("Receive message " + s + " from " + addr  );
+                    System.out.println("Receive message " + s + " from " + addr);
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
 
         }).start();
+    }
+
+    public void sendHellos() throws IOException {
+        List<InetAddress> addrs = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS));
+        String msg = "HELLO";
+        System.out.println("\nSending the message: " + msg);
+        MulticastSocket ms = new MulticastSocket();
+        DatagramPacket dp = new DatagramPacket(
+                msg.getBytes(),
+                msg.length(),
+                InetAddress.getByName(Variables.MULTICAST_ADDRESS),
+                Variables.MULTICAST_PORT);
+
+        for (InetAddress addr: addrs) {
+            System.out.println("Sending on " + addr);
+            ms.setInterface(addr);
+            ms.send(dp);
+        }
+        ms.close();
     }
 
 
