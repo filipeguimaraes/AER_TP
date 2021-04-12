@@ -5,7 +5,17 @@ public class Main {
 
     public static void main(String[] args) throws SocketException, UnknownHostException {
         Rede p2p = new Rede();
-        p2p.refreshPeers();
+        new Thread(() -> {
+            while (true) {
+                try {
+                    p2p.refreshPeers();
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }).start();
     }
 
 }

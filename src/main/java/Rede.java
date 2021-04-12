@@ -1,7 +1,5 @@
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.io.IOException;
+import java.net.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -12,6 +10,7 @@ public class Rede {
 
     public Rede() {
         this.peers = new ArrayList<>();
+        receiveMulticast();
     }
 
 
@@ -54,10 +53,34 @@ public class Rede {
         List<InetAddress> enderecos = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS));
         for (InetAddress e: enderecos) {
             Peer peer = new Peer(e, LocalDateTime.now());
-            this.peers.add(peer);
+            //this.peers.add(peer);
             System.out.println("Peer adicionado: "+peer.getEndereco()+" :: "+peer.getDataCriacao());
         }
 
+    }
+
+    public void receiveMulticast(){
+        new Thread(() ->{
+            try {
+                InetAddress group = InetAddress.getByName(Variables.MULTICAST_ADDRESS);
+
+                MulticastSocket ms = new MulticastSocket(Variables.MULTICAST_PORT);
+                ms.joinGroup(group);
+                byte[] buffer = new byte[8192];
+                while(true){
+                    System.out.println("Waiting for a multicast message sent to"+Variables.MULTICAST_ADDRESS);
+                    DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
+
+                    ms.receive(dp);
+                    String s = new String(dp.getData(), 0, dp.getLength());
+                    String addr = dp.getAddress().toString();
+                    System.out.println("Receive message " + s + " from " + addr  );
+                }
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+
+        }).start();
     }
 
 
