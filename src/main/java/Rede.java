@@ -68,6 +68,7 @@ public class Rede {
 
                     //bloqueia a espera de um host
                     ms.receive(dp);
+                    System.out.println("recebeu uma mensagem!");
                     Multiplexer.receive(dp);
                 }
             } catch (Exception e) {
@@ -88,10 +89,12 @@ public class Rede {
                 InetAddress.getByName(Variables.MULTICAST_ADDRESS),
                 Variables.MULTICAST_PORT);
 
+        System.out.println("callHellos");
         for (InetAddress addr : addrs) {
             //System.out.println("Sending on " + addr);
             ms.setInterface(addr);
             ms.send(dp);
+            System.out.println("Enviou uma mensagem!");
         }
         ms.close();
     }
