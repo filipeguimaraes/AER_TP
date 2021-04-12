@@ -9,7 +9,6 @@ public class Multiplexer {
         switch (message){
             case "HELLO":
                 rede.addPeer(new Peer(dp.getAddress(), LocalDateTime.now()));
-                break;
             default:
                 System.out.println("SHIT");
                 rede.addPeer(new Peer(dp.getAddress(), LocalDateTime.now()));
