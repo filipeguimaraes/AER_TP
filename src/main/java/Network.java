@@ -130,11 +130,12 @@ public class Network {
             while (true) {
                 try {
                     lock();
-                    for (Peer peer : peers.values()) {
+                    ArrayList<Peer> peers = new ArrayList<>(this.peers.values());
+                    for (Peer peer : peers) {
                         Duration duration = Duration.between(peer.getAddDate(), LocalDateTime.now());
                         if (duration.toMillis() > deadTime) {
                             System.out.println("Peer desconectado: " + peer.getAddress().toString());
-                            peers.remove(peer.getAddress().toString());
+                            this.peers.remove(peer.getAddress().toString());
                         }
                     }
                 }finally {
