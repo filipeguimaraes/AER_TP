@@ -16,7 +16,7 @@ public class Network {
         this.peers = new TreeMap<>();
         sendHellos();
         receiveMulticast();
-        //killPeers();
+        killPeers();
     }
 
     public static Network getInstance() {
@@ -71,7 +71,6 @@ public class Network {
                 while (true) {
                     DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
                     ms.receive(dp);
-                    System.out.println("Received: "+dp.getAddress());
                     Multiplexer.receive(dp);
                 }
             } catch (Exception e) {
@@ -140,7 +139,7 @@ public class Network {
                         }
                     }
                     try {
-                        Thread.sleep(helloTime);
+                        Thread.sleep(deadTime);
                     } catch (Exception ignore) {
                     }
                 } finally {
