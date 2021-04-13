@@ -2,12 +2,12 @@ import java.net.InetAddress;
 import java.time.LocalDateTime;
 
 public class Peer {
-    private InetAddress address;
-    private LocalDateTime addDate;
+    private final InetAddress address;
+    private final LocalDateTime addDate;
 
-    public Peer(InetAddress endereco, LocalDateTime dataCriacao) {
-        this.address = endereco;
-        this.addDate = dataCriacao;
+    public Peer(InetAddress address, LocalDateTime addDate) {
+        this.address = address;
+        this.addDate = addDate;
     }
 
     public InetAddress getAddress() {

@@ -2,11 +2,9 @@ import java.net.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Network {
     private static Network instance = null;
-    private ReentrantLock lock = new ReentrantLock();
     private int helloTime = Variables.HELLO_TIME;
     private int deadTime = Variables.DEAD_TIME;
     private Map<String, Peer> peers;
@@ -111,39 +109,28 @@ public class Network {
     }
 
     public void addPeer(Peer peer) {
-        try {
-            lock.lock();
-            if (!peers.containsKey(peer.getAddress().toString())) {
-                peers.put(peer.getAddress().toString(), peer);
-                System.out.println("Add peer: " + peer.getAddress().toString());
-            } else {
-                peers.remove(peer.getAddress().toString());
-                peers.put(peer.getAddress().toString(), peer);
-            }
-        } finally {
-            lock.unlock();
+        if (!peers.containsKey(peer.getAddress().toString())) {
+            peers.put(peer.getAddress().toString(), peer);
+            System.out.println("Add peer: " + peer.getAddress().toString());
+        } else {
+            peers.remove(peer.getAddress().toString());
+            peers.put(peer.getAddress().toString(), peer);
         }
-
     }
 
     public void killPeers() {
         new Thread(() -> {
             while (true) {
+                for (Peer peer : peers.values()) {
+                    Duration duration = Duration.between(peer.getAddDate(), LocalDateTime.now());
+                    if (duration.toMillis() > deadTime) {
+                        System.out.println("Peer desconectado: " + peer.getAddress().toString());
+                        peers.remove(peer.getAddress().toString());
+                    }
+                }
                 try {
-                    lock.lock();
-                    for (Peer peer : peers.values()) {
-                        Duration duration = Duration.between(peer.getAddDate(), LocalDateTime.now());
-                        if (duration.toMillis() > deadTime) {
-                            System.out.println("Peer desconectado: " + peer.getAddress().toString());
-                            peers.remove(peer.getAddress().toString());
-                        }
-                    }
-                    try {
-                        Thread.sleep(deadTime);
-                    } catch (Exception ignore) {
-                    }
-                } finally {
-                    lock.unlock();
+                    Thread.sleep(deadTime);
+                } catch (Exception ignore) {
                 }
 
             }
