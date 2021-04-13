@@ -16,7 +16,7 @@ public class Network {
         this.peers = new TreeMap<>();
         sendHellos();
         receiveMulticast();
-        killPeers();
+        //killPeers();
     }
 
     public static Network getInstance() {

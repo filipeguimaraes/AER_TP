@@ -9,6 +9,7 @@ public class Multiplexer {
         String message = new String(dp.getData(), 0, dp.getLength());
         switch (message){
             case "HELLO":
+                System.out.println("Multiplexer: Recebi um hello");
                 network.addPeer(new Peer(dp.getAddress(), LocalDateTime.now()));
                 break;
             default:
