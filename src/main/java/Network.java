@@ -71,7 +71,7 @@ public class Network {
                 while (true) {
                     DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
                     ms.receive(dp);
-                    System.out.println("Received");
+                    System.out.println("Received: "+dp.getAddress());
                     Multiplexer.receive(dp);
                 }
             } catch (Exception e) {
@@ -96,7 +96,7 @@ public class Network {
                             Variables.MULTICAST_PORT);
 
                     for (InetAddress addr : addrs) {
-                        System.out.println("Sending on " + addr);
+                        //System.out.println("Sending on " + addr);
                         ms.setInterface(addr);
                         ms.send(dp);
 
