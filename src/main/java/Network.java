@@ -115,7 +115,7 @@ public class Network {
             lock();
             if (!peers.containsKey(peer.getAddress().toString())) {
                 peers.put(peer.getAddress().toString(), peer);
-                System.out.println("Add peer: " + peer.getAddress().toString());
+                System.out.println("("+LocalDateTime.now()+") Add peer: " + peer.getAddress().toString());
             } else {
                 peers.remove(peer.getAddress().toString());
                 peers.put(peer.getAddress().toString(), peer);
@@ -134,7 +134,7 @@ public class Network {
                     for (Peer peer : peers) {
                         Duration duration = Duration.between(peer.getAddDate(), LocalDateTime.now());
                         if (duration.toMillis() > deadTime) {
-                            System.out.println("Peer desconectado: " + peer.getAddress().toString());
+                            System.out.println("("+LocalDateTime.now()+") Peer desconectado: " + peer.getAddress().toString());
                             this.peers.remove(peer.getAddress().toString());
                         }
                     }
