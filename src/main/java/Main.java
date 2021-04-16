@@ -39,7 +39,7 @@ public class Main {
             case 1:
                 Network.getInstance().sendQuery("test");
         }
-        Scanner sc= new Scanner(System.in);
+
         if (sc.nextLine().contains("m")){
             menu();
         }
