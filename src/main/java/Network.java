@@ -142,7 +142,7 @@ public class Network {
                     unlock();
                 }
                 try {
-                    Thread.sleep(deadTime);
+                    Thread.sleep(helloTime);
                 } catch (Exception ignore) {}
 
             }
