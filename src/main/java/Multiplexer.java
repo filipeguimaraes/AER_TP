@@ -16,7 +16,7 @@ public class Multiplexer {
                 network.addPeer(new Peer(originAddress, LocalDateTime.now()));
                 break;
             case Variables.QUERY:
-                //TODO
+                System.out.println("Recebi uma query!");
                 break;
             default:
                 System.out.println("Recebeu uma mensagem inválida!");;
