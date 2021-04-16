@@ -20,7 +20,7 @@ public class Main {
 
         }).start();
         Scanner sc= new Scanner(System.in);
-        if (sc.nextLine().contains("m")){
+        if (sc.nextLine().equals("m")){
             menu();
         }
 
@@ -40,7 +40,8 @@ public class Main {
                 Network.getInstance().sendQuery("test");
         }
 
-        if (sc.nextLine().contains("m")){
+        Scanner s = new Scanner(System.in);
+        if (s.nextLine().equals("m")){
             menu();
         }
     }
