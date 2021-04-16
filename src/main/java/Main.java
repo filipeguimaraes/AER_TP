@@ -6,7 +6,7 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        System.out.println("(Type \\u001b[31m m \\u001b[0m to access the menu)");
+        System.out.println("(Type m to access the menu)");
         Network p2p = Network.getInstance();
         new Thread(() -> {
             while (true) {
@@ -38,6 +38,10 @@ public class Main {
         switch (sc.nextInt()){
             case 1:
                 Network.getInstance().sendQuery("test");
+        }
+        Scanner sc= new Scanner(System.in);
+        if (sc.nextLine().contains("m")){
+            menu();
         }
     }
 

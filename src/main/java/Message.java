@@ -1,5 +1,4 @@
 import java.io.Serializable;
-import java.net.DatagramPacket;
 import java.util.List;
 
 public class Message implements Serializable {
