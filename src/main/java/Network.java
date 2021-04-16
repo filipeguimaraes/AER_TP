@@ -1,3 +1,4 @@
+import java.io.*;
 import java.net.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -67,11 +68,19 @@ public class Network {
 
                 MulticastSocket ms = new MulticastSocket(Variables.MULTICAST_PORT);
                 ms.joinGroup(group);
-                byte[] buffer = new byte[8192];
+
+
+
                 while (true) {
+                    byte[] buffer = new byte[8192];
                     DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
                     ms.receive(dp);
-                    Multiplexer.receive(dp);
+
+                    ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
+                    ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(bais));
+                    Message message = (Message) ois.readObject();
+
+                    Multiplexer.receive(message,dp.getAddress());
                 }
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -85,12 +94,19 @@ public class Network {
             while (true) {
                 try {
                     List<InetAddress> addrs = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS));
-                    String msg = "HELLO";
+                    //String msg = "HELLO";
+
+                    Message hello = new Message(Variables.HELLO,null,null);
+                    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    final ObjectOutputStream oos = new ObjectOutputStream(baos);
+                    oos.writeObject(hello);
+
+                    final byte[] data = baos.toByteArray();
                     //System.out.println("\nSending the message: " + msg);
                     MulticastSocket ms = new MulticastSocket();
                     DatagramPacket dp = new DatagramPacket(
-                            msg.getBytes(),
-                            msg.length(),
+                            data,
+                            data.length,
                             InetAddress.getByName(Variables.MULTICAST_ADDRESS),
                             Variables.MULTICAST_PORT);
 
