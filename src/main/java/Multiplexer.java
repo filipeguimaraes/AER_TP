@@ -15,7 +15,8 @@ public class Multiplexer {
                 //System.out.println("Multiplexer: Recebi um hello do peer "+dp.getAddress());
                 network.addPeer(new Peer(originAddress, LocalDateTime.now()));
                 break;
-            case 2:
+            case Variables.QUERY:
+                //TODO
                 break;
             default:
                 System.out.println("Recebeu uma mensagem inválida!");;

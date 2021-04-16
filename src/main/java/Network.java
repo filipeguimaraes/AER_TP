@@ -94,7 +94,6 @@ public class Network {
             while (true) {
                 try {
                     List<InetAddress> addrs = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS));
-                    //String msg = "HELLO";
 
                     Message hello = new Message(Variables.HELLO,null,null);
                     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -102,7 +101,6 @@ public class Network {
                     oos.writeObject(hello);
 
                     final byte[] data = baos.toByteArray();
-                    //System.out.println("\nSending the message: " + msg);
                     MulticastSocket ms = new MulticastSocket();
                     DatagramPacket dp = new DatagramPacket(
                             data,
@@ -111,7 +109,6 @@ public class Network {
                             Variables.MULTICAST_PORT);
 
                     for (InetAddress addr : addrs) {
-                        //System.out.println("Sending on " + addr);
                         ms.setInterface(addr);
                         ms.send(dp);
 
@@ -163,6 +160,29 @@ public class Network {
 
             }
         }).start();
+    }
+
+    public void sendQuery(String queryMessage) throws IOException {
+
+        Message query = new Message(Variables.QUERY,queryMessage,null);
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(query);
+
+        final byte[] data = baos.toByteArray();
+        DatagramSocket ds = new DatagramSocket();
+
+        List<Peer> peers = new ArrayList<>(this.peers.values());
+
+        for (Peer peer : peers) {
+            DatagramPacket dp = new DatagramPacket(
+                    data,
+                    data.length,
+                    peer.getAddress(),
+                    Variables.MULTICAST_PORT);
+            ds.send(dp);
+        }
+        ds.close();
     }
 
     public void lock(){

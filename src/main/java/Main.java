@@ -1,9 +1,12 @@
+import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) throws SocketException, UnknownHostException {
+    public static void main(String[] args) throws IOException {
+        System.out.println("(Type \\u001b[31m m \\u001b[0m to access the menu)");
         Network p2p = Network.getInstance();
         new Thread(() -> {
             while (true) {
@@ -16,6 +19,26 @@ public class Main {
             }
 
         }).start();
+        Scanner sc= new Scanner(System.in);
+        if (sc.nextLine().contains("m")){
+            menu();
+        }
+
+    }
+
+
+    public static void menu() throws IOException {
+        System.out.println("###################");
+        System.out.println("1: Send a request.");
+        System.out.println("###################");
+
+        System.out.println("Opcção:");
+
+        Scanner sc= new Scanner(System.in);
+        switch (sc.nextInt()){
+            case 1:
+                Network.getInstance().sendQuery("test");
+        }
     }
 
 }

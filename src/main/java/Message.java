@@ -7,7 +7,7 @@ public class Message implements Serializable {
     //Integer id;
     int type;
     String message;
-    List<MessagePlugin> pluginList ;
+    List<MessagePlugin> pluginList;
 
 
     public Message(Integer type, String message, List<MessagePlugin> pluginList) {
