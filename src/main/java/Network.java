@@ -189,8 +189,11 @@ public class Network {
 
     public void loadPeersFromConfig(String path) throws IOException, ParseException {
         JSONParser parser = new JSONParser();
+        System.out.println("1");
         JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(path));
+        System.out.println("2");
         JSONArray jsonArray = (JSONArray) jsonObject.get("nodes");
+        System.out.println("3");
 
         for (String s : (Iterable<String>) jsonArray) {
             Message m = new Message(Variables.ACK,null,null);
