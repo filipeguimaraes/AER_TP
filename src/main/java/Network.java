@@ -5,6 +5,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 public class Network {
     private static Network instance = null;
     private int helloTime = Variables.HELLO_TIME;
@@ -162,9 +167,9 @@ public class Network {
         }).start();
     }
 
-    public void sendQuery(String queryMessage) throws IOException {
+    public void sendSimpleMessage(int type,String message,InetAddress address) throws IOException {
 
-        Message query = new Message(Variables.QUERY,queryMessage,null);
+        Message query = new Message(type,message,null);
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(query);
@@ -172,18 +177,28 @@ public class Network {
         final byte[] data = baos.toByteArray();
         DatagramSocket ds = new DatagramSocket();
 
-        List<Peer> peers = new ArrayList<>(this.peers.values());
-
-        for (Peer peer : peers) {
-            DatagramPacket dp = new DatagramPacket(
+        DatagramPacket dp = new DatagramPacket(
                     data,
                     data.length,
-                    peer.getAddress(),
+                    address,
                     Variables.MULTICAST_PORT);
-            ds.send(dp);
-        }
+        ds.send(dp);
+
         ds.close();
     }
+
+    public void loadPeersFromConfig(String path) throws IOException, ParseException {
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(path));
+        JSONArray jsonArray = (JSONArray) jsonObject.get("nodes");
+
+        for (String s : (Iterable<String>) jsonArray) {
+            Message m = new Message(Variables.ACK,null,null);
+            System.out.println(s);
+        }
+
+    }
+
 
     public void lock(){
         this.lock.lock();

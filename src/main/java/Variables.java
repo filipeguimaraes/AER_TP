@@ -6,5 +6,6 @@ public class Variables {
 
     public static final int HELLO = 1;
     public static final int QUERY = 2;
+    public static final int ACK = 3;
     //TIPOS DE MENSAGENS
 }

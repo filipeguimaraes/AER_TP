@@ -18,6 +18,9 @@ public class Multiplexer {
             case Variables.QUERY:
                 System.out.println("Recebi uma query!");
                 break;
+            case Variables.ACK:
+                System.out.println("Recebi um ACK!");
+                break;
             default:
                 System.out.println("Recebeu uma mensagem inválida!");;
                 break;

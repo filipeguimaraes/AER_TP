@@ -1,17 +1,18 @@
 import java.io.IOException;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        System.out.println("(Type m to access the menu)");
+
         Network p2p = Network.getInstance();
         new Thread(() -> {
             while (true) {
                 try {
                     p2p.sendHellos();
+                    if(!args[1].equals("")){
+                        p2p.loadPeersFromConfig(args[1]);
+                    }
                     Thread.sleep(2000);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -19,31 +20,14 @@ public class Main {
             }
 
         }).start();
-        Scanner sc= new Scanner(System.in);
-        if (sc.nextLine().equals("m")){
-            menu();
+        Scanner sc = new Scanner(System.in);
+        if (sc.nextLine().equals("m")) {
+            Menu.menu();
+        } else {
+            System.out.println("(Type m to access the menu)");
         }
 
     }
 
-
-    public static void menu() throws IOException {
-        System.out.println("###################");
-        System.out.println("1: Send a request.");
-        System.out.println("###################");
-
-        System.out.println("Opcção:");
-
-        Scanner sc= new Scanner(System.in);
-        switch (sc.nextInt()){
-            case 1:
-                Network.getInstance().sendQuery("test");
-        }
-
-        Scanner s = new Scanner(System.in);
-        if (s.nextLine().equals("m")){
-            menu();
-        }
-    }
 
 }

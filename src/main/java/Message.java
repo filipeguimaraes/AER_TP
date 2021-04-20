@@ -9,7 +9,7 @@ public class Message implements Serializable {
     List<MessagePlugin> pluginList;
 
 
-    public Message(Integer type, String message, List<MessagePlugin> pluginList) {
+    public Message(int type, String message, List<MessagePlugin> pluginList) {
         this.type = type;
         this.message = message;
         this.pluginList = pluginList;
