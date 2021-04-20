@@ -10,8 +10,8 @@ public class Main {
             while (true) {
                 try {
                     p2p.sendHellos();
-                    if(!args[1].equals("")){
-                        p2p.loadPeersFromConfig(args[1]);
+                    if(args.length==1){
+                        p2p.loadPeersFromConfig(args[0]);
                     }
                     Thread.sleep(2000);
                 } catch (Exception e) {
