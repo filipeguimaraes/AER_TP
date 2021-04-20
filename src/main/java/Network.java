@@ -167,12 +167,11 @@ public class Network {
         }).start();
     }
 
-    public void sendSimpleMessage(int type,String message,InetAddress address) throws IOException {
+    public void sendSimpleMessage(Message message,InetAddress address) throws IOException {
 
-        Message query = new Message(type,message,null);
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(query);
+        oos.writeObject(message);
 
         final byte[] data = baos.toByteArray();
         DatagramSocket ds = new DatagramSocket();
@@ -197,7 +196,7 @@ public class Network {
 
         for (String s : (Iterable<String>) jsonArray) {
             Message m = new Message(Variables.ACK,null,null);
-            System.out.println(s);
+            sendSimpleMessage(m,InetAddress.getByName(s));
         }
 
     }
