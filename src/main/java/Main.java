@@ -6,17 +6,8 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) throws IOException, ParseException {
+        System.out.println("(Type m to access the menu)");
         Network p2p = Network.getInstance();
-        new Thread(() -> {
-            while (true) {
-                try {
-                    p2p.obtainPeersOnMulticast();
-                    Thread.sleep(2000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
 
         if(args.length==1){
             p2p.loadPeersFromConfig(args[0]);
