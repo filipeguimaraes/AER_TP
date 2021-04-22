@@ -156,6 +156,8 @@ public class Network {
     public void addPeer(Peer peer) {
         try {
             lock();
+            System.out.println("peer:"+peer.getAddress().getHostName());
+            System.out.println("my: "+myAddress);
             if (!peer.getAddress().getHostName().equals(myAddress)) {
 
                 if (!peers.containsKey(peer.getAddress().toString())) {
