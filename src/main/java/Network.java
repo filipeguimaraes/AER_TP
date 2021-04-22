@@ -245,6 +245,8 @@ public class Network {
         for (String s : (Iterable<String>) jsonArray) {
             Peer newPeer = new Peer(InetAddress.getByName(s), LocalDateTime.now());
             addPeer(newPeer);
+            Message hello = new Message(Variables.HELLO, null);
+            sendSimpleMessage(hello, newPeer.getAddress());
         }
     }
 
