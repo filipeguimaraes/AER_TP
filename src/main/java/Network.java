@@ -26,6 +26,7 @@ public class Network {
             this.myAddress = InetAddress.getByName(address.toString().split("%")[0]);
             System.out.println("lol"+myAddress);
         } catch (Exception ignored) {
+            System.out.println("deu coco");
         }
         obtainPeersOnMulticast();
         receiveMulticast();
