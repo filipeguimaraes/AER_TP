@@ -174,11 +174,13 @@ public class Network {
                     lock();
                     ArrayList<Peer> peers = new ArrayList<>(this.peers.values());
                     for (Peer peer : peers) {
-                        Duration duration = Duration.between(peer.getTimeStamp(), LocalDateTime.now());
-                        if (duration.toMillis() > deadTime) {
-                            System.out.println("(" + LocalDateTime.now() +
-                                    ") Peer desconectado: " + peer.getAddress().toString());
-                            this.peers.get(peer.getAddress().toString()).deactivate();
+                        if (peer.isON()) {
+                            Duration duration = Duration.between(peer.getTimeStamp(), LocalDateTime.now());
+                            if (duration.toMillis() > deadTime) {
+                                System.out.println("(" + LocalDateTime.now() +
+                                        ") Peer desconectado: " + peer.getAddress().toString());
+                                this.peers.get(peer.getAddress().toString()).deactivate();
+                            }
                         }
                     }
                 } finally {
@@ -247,7 +249,7 @@ public class Network {
      */
     public void addPeers(List<InetAddress> peers) {
         for (InetAddress peer : peers) {
-            Peer newPeer = new Peer(peer,LocalDateTime.now());
+            Peer newPeer = new Peer(peer, LocalDateTime.now());
             addPeer(newPeer);
         }
 
@@ -267,7 +269,8 @@ public class Network {
                         try {
                             sendSimpleMessage(ping, p.getAddress());
                         } catch (IOException e) {
-                            System.out.println("Não foi possível enviar o ping para " + p.getAddress() + ".");
+                            this.peers.get(p.getAddress().toString()).deactivate();
+                            //System.out.println("Não foi possível enviar o ping para " + p.getAddress() + ".");
                         }
                     }
                 } finally {
