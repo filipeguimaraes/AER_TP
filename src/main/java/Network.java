@@ -241,17 +241,11 @@ public class Network {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(path));
         JSONArray jsonArray = (JSONArray) jsonObject.get("nodes");
-        try {
-            lock();
-            for (String s : (Iterable<String>) jsonArray) {
-                Peer newPeer = new Peer(InetAddress.getByName(s), LocalDateTime.now());
-                peers.put(newPeer.getAddress().toString(), newPeer);
-            }
-        } finally {
-            unlock();
+
+        for (String s : (Iterable<String>) jsonArray) {
+            Peer newPeer = new Peer(InetAddress.getByName(s), LocalDateTime.now());
+            addPeer(newPeer);
         }
-
-
     }
 
     /**
