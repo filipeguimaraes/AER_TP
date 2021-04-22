@@ -12,8 +12,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Network {
     private static Network instance = null;
-    private InetAddress myAddress = null;
     private final ReentrantLock lock = new ReentrantLock();
+    private InetAddress myAddress = null;
     private int helloTime = Variables.HELLO_TIME;
     private int deadTime = Variables.DEAD_TIME;
     private Map<String, Peer> peers;
@@ -23,7 +23,8 @@ public class Network {
         this.peers = new TreeMap<>();
         try {
             this.myAddress = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS)).get(0);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         obtainPeersOnMulticast();
         receiveMulticast();
         killPeers();
@@ -154,7 +155,8 @@ public class Network {
     public void addPeer(Peer peer) {
         try {
             lock();
-            if(peer.getAddress().isLinkLocalAddress()){
+            if (peer.getAddress().isLinkLocalAddress()
+                    || peer.getAddress().toString().equals(myAddress.toString())) {
                 System.out.println(peer);
                 return;
             }
@@ -275,7 +277,7 @@ public class Network {
                     Message ping = new Message(Variables.PING, null);
                     for (Peer p : peers) {
                         //Não enviar ping para si próprio
-                        if (p.getAddress().toString().equals(myAddress.toString())){
+                        if (p.getAddress().toString().equals(myAddress.toString())) {
                             continue;
                         }
                         try {
@@ -289,7 +291,8 @@ public class Network {
                 }
                 try {
                     Thread.sleep(Variables.HELLO_TIME);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
         }).start();
 
