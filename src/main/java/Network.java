@@ -249,6 +249,9 @@ public class Network {
         try {
             lock();
             for (InetAddress peer : peers) {
+                if(peer.isLinkLocalAddress()){
+                    continue;
+                }
                 if (!this.peers.containsKey(peer.toString())) {
                     Peer newPeer = new Peer(peer, LocalDateTime.now());
                     this.peers.put(newPeer.getAddress().toString(), newPeer);
