@@ -154,8 +154,8 @@ public class Network {
                 peers.put(peer.getAddress().toString(), peer);
                 System.out.println("(" + LocalDateTime.now() + ") Add peer: " + peer.getAddress().toString());
             } else {
-                peers.remove(peer.getAddress().toString());
-                peers.put(peer.getAddress().toString(), peer);
+                Peer p = peers.get(peer.getAddress().toString());
+                p.activate();
             }
 
         } finally {
@@ -174,10 +174,10 @@ public class Network {
                     lock();
                     ArrayList<Peer> peers = new ArrayList<>(this.peers.values());
                     for (Peer peer : peers) {
-                        Duration duration = Duration.between(peer.getAddDate(), LocalDateTime.now());
+                        Duration duration = Duration.between(peer.getTimeStamp(), LocalDateTime.now());
                         if (duration.toMillis() > deadTime) {
                             System.out.println("(" + LocalDateTime.now() + ") Peer desconectado: " + peer.getAddress().toString());
-                            this.peers.remove(peer.getAddress().toString());
+                            this.peers.get(peer.getAddress().toString()).deactivate();
                         }
                     }
                 } finally {
@@ -269,10 +269,12 @@ public class Network {
                     List<Peer> peers = new ArrayList<>(this.peers.values());
                     Message ping = new Message(Variables.PING, null);
                     for (Peer p : peers) {
-                        try {
-                            sendSimpleMessage(ping, p.getAddress());
-                        } catch (IOException e) {
-                            System.out.println("Não foi possível enviar o ping para " + p.getAddress() + ".");
+                        if (p.isON()) {
+                            try {
+                                sendSimpleMessage(ping, p.getAddress());
+                            } catch (IOException e) {
+                                System.out.println("Não foi possível enviar o ping para " + p.getAddress() + ".");
+                            }
                         }
                     }
                 } finally {
@@ -288,6 +290,63 @@ public class Network {
 
     }
 
+    public void printConnectedPeers() {
+        try {
+            lock();
+            List<Peer> peers = new ArrayList<>(this.peers.values());
+            int i = 1;
+            System.out.println("-----------------------------------");
+            for (Peer p : peers) {
+                if (p.isON()) {
+
+                    System.out.println(i + ") Address: " +
+                            p.getAddress() +
+                            ", Add in: " +
+                            p.getAddDate() +
+                            ", Time on: " +
+                            Duration.between(p.getAddDate(), LocalDateTime.now()).toMinutes() +
+                            " min.");
+                    i++;
+                }
+            }
+            if (i == 1) {
+                System.out.println("Nenhum peer conectado!");
+            }
+            System.out.println("-----------------------------------");
+
+        } finally {
+            unlock();
+        }
+    }
+
+    public void printDisconnectedPeers() {
+        try {
+            lock();
+            List<Peer> peers = new ArrayList<>(this.peers.values());
+            int i = 1;
+            System.out.println("-----------------------------------");
+            for (Peer p : peers) {
+                if (!p.isON()) {
+
+                    System.out.println(i + ") Address: " +
+                            p.getAddress() +
+                            ", Add in: " +
+                            p.getAddDate() +
+                            ", Time off: " +
+                            Duration.between(p.getTimeStamp(), LocalDateTime.now()).toMinutes() +
+                            " min.");
+                    i++;
+                }
+            }
+            if (i == 1) {
+                System.out.println("Nenhum peer desconectado!");
+            }
+            System.out.println("-----------------------------------");
+
+        } finally {
+            unlock();
+        }
+    }
 
     //*************************************************//
     // Métodos de controlo de acesso à lista de peers. //

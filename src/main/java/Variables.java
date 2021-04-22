@@ -13,4 +13,7 @@ public class Variables {
     public static final int PING = 3;
     public static final int PEERS = 4;
 
+    //Estado do peer
+    public static final int ON = 1;
+    public static final int OFF =0;
 }
