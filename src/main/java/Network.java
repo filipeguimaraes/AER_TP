@@ -154,6 +154,10 @@ public class Network {
     public void addPeer(Peer peer) {
         try {
             lock();
+            if(peer.getAddress().isLinkLocalAddress()){
+                System.out.println(peer);
+                return;
+            }
             if (!peers.containsKey(peer.getAddress().toString())) {
                 peers.put(peer.getAddress().toString(), peer);
                 System.out.println("(" + LocalDateTime.now() + ") Add peer: " + peer.getAddress().toString());
@@ -249,14 +253,9 @@ public class Network {
         try {
             lock();
             for (InetAddress peer : peers) {
-                if(peer.isLinkLocalAddress()){
-                    System.out.println(peer);
-                    continue;
-                }
-                System.out.println(peer);
                 if (!this.peers.containsKey(peer.toString())) {
                     Peer newPeer = new Peer(peer, LocalDateTime.now());
-                    this.peers.put(newPeer.getAddress().toString(), newPeer);
+                    addPeer(newPeer);
                 }
             }
         } finally {
