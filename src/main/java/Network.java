@@ -24,6 +24,7 @@ public class Network {
         try {
             InetAddress address = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS)).get(0);
             this.myAddress = InetAddress.getByName(address.toString().split("%")[0]);
+            System.out.println("lol"+myAddress);
         } catch (Exception ignored) {
         }
         obtainPeersOnMulticast();
