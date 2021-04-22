@@ -156,18 +156,19 @@ public class Network {
     public void addPeer(Peer peer) {
         try {
             lock();
-            System.out.println("peer:"+peer.getAddress().getHostName());
-            System.out.println("my: "+myAddress);
-            if (!peer.getAddress().getHostName().equals(myAddress)) {
-
-                if (!peers.containsKey(peer.getAddress().toString())) {
-                    peers.put(peer.getAddress().toString(), peer);
-                    System.out.println("(" + LocalDateTime.now() + ") Add peer: " + peer.getAddress().toString());
-                } else {
-                    peers.remove(peer.getAddress().toString());
-                    peers.put(peer.getAddress().toString(), peer);
-                }
+            /**
+             System.out.println("peer:"+peer.getAddress().getHostName());
+             System.out.println("my: "+myAddress);
+             if (!peer.getAddress().getHostName().equals(myAddress)) {
+             }**/
+            if (!peers.containsKey(peer.getAddress().toString())) {
+                peers.put(peer.getAddress().toString(), peer);
+                System.out.println("(" + LocalDateTime.now() + ") Add peer: " + peer.getAddress().toString());
+            } else {
+                peers.remove(peer.getAddress().toString());
+                peers.put(peer.getAddress().toString(), peer);
             }
+
         } finally {
             unlock();
         }
