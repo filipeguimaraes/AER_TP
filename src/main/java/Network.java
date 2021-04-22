@@ -281,7 +281,8 @@ public class Network {
                     Message ping = new Message(Variables.PING, null);
                     for (Peer p : peers) {
                         //Não enviar ping para si próprio
-                        if (p.getAddress().toString().equals(myAddress.toString())) {
+                        if (p.getAddress().isLinkLocalAddress()
+                                || p.getAddress().getHostName().equals(myAddress.getHostName())) {
                             continue;
                         }
                         try {
