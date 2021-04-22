@@ -157,7 +157,7 @@ public class Network {
         try {
             lock();
             if (peer.getAddress().isLinkLocalAddress()
-                    || peer.getAddress().getHostName().equals(myAddress)) {
+                    || peer.getAddress().getHostName().equals("/" + myAddress)) {
                 return;
             }
             if (!peers.containsKey(peer.getAddress().toString())) {
