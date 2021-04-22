@@ -23,7 +23,7 @@ public class Network {
         this.peers = new TreeMap<>();
         try {
             InetAddress address = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS)).get(0);
-            System.out.println("!!!!!" +address.getHostAddress());
+            System.out.println("!!!!!" +address.getHostName());
             this.myAddress = address;
         } catch (Exception ignored) {
         }
@@ -158,7 +158,7 @@ public class Network {
         try {
             lock();
             if (peer.getAddress().isLinkLocalAddress()
-                    || peer.getAddress().getHostAddress().equals(myAddress.getHostAddress())) {
+                    || peer.getAddress().getHostName().equals(myAddress.getHostName())) {
                 System.out.println(peer);
                 return;
             }
