@@ -24,9 +24,7 @@ public class Network {
         try {
             InetAddress address = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS)).get(0);
             this.myAddress = address.toString().split("%")[0];
-            System.out.println("lol"+myAddress);
         } catch (Exception ignored) {
-            System.out.println("deu coco");
         }
         obtainPeersOnMulticast();
         receiveMulticast();
@@ -158,13 +156,10 @@ public class Network {
     public void addPeer(Peer peer) {
         try {
             lock();
-            /**
-
-             if (peer.getAddress().isLinkLocalAddress()
-             || peer.getAddress().getHostName().equals(myAddress.getHostName())) {
-             return;
-             }
-             **/
+            if (peer.getAddress().isLinkLocalAddress()
+                    || peer.getAddress().getHostName().equals(myAddress)) {
+                return;
+            }
             if (!peers.containsKey(peer.getAddress().toString())) {
                 peers.put(peer.getAddress().toString(), peer);
                 System.out.println("(" + LocalDateTime.now() + ") Add peer: " + peer.getAddress().toString());
@@ -282,11 +277,11 @@ public class Network {
                     List<Peer> peers = new ArrayList<>(this.peers.values());
                     Message ping = new Message(Variables.PING, null);
                     for (Peer p : peers) {
-                        System.out.println("mypeer: "+myAddress);
-                        System.out.println("peer: "+p.getAddress().getHostName());
+                        System.out.println("mypeer: " + myAddress);
+                        System.out.println("peer: " + p.getAddress().getHostName());
                         //Não enviar ping para si próprio
                         if (p.getAddress().isLinkLocalAddress()
-                                || p.getAddress().getHostName().equals(myAddress)){
+                                || p.getAddress().getHostName().equals(myAddress)) {
                             continue;
                         }
                         try {
