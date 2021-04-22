@@ -156,16 +156,15 @@ public class Network {
     public void addPeer(Peer peer) {
         try {
             lock();
-            if (peer.getAddress().isLinkLocalAddress()
-                    || peer.getAddress().getHostName().equals("/" + myAddress)) {
-                return;
-            }
-            if (!peers.containsKey(peer.getAddress().toString())) {
-                peers.put(peer.getAddress().toString(), peer);
-                System.out.println("(" + LocalDateTime.now() + ") Add peer: " + peer.getAddress().toString());
-            } else {
-                peers.remove(peer.getAddress().toString());
-                peers.put(peer.getAddress().toString(), peer);
+            if (!peer.getAddress().getHostName().equals(myAddress)) {
+
+                if (!peers.containsKey(peer.getAddress().toString())) {
+                    peers.put(peer.getAddress().toString(), peer);
+                    System.out.println("(" + LocalDateTime.now() + ") Add peer: " + peer.getAddress().toString());
+                } else {
+                    peers.remove(peer.getAddress().toString());
+                    peers.put(peer.getAddress().toString(), peer);
+                }
             }
         } finally {
             unlock();
@@ -277,13 +276,6 @@ public class Network {
                     List<Peer> peers = new ArrayList<>(this.peers.values());
                     Message ping = new Message(Variables.PING, null);
                     for (Peer p : peers) {
-                        System.out.println("mypeer: " + myAddress);
-                        System.out.println("peer: " + p.getAddress().getHostName());
-                        //Não enviar ping para si próprio
-                        if (p.getAddress().isLinkLocalAddress()
-                                || p.getAddress().getHostName().equals(myAddress)) {
-                            continue;
-                        }
                         try {
                             sendSimpleMessage(ping, p.getAddress());
                         } catch (IOException e) {
