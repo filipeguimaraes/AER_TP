@@ -1,4 +1,4 @@
 {
   "nodes": ["2001::1"],
-  "files": ["/home/core/test2.txt"]
+  "files": ["test2.txt"]
 }
