@@ -151,11 +151,11 @@ public class Network {
         try {
             lock();
             if (!peers.containsKey(peer.getAddress().toString())) {
+                peer.activate();
                 peers.put(peer.getAddress().toString(), peer);
                 System.out.println("(" + LocalDateTime.now() + ") Add peer: " + peer.getAddress().toString());
             } else {
-                Peer p = peers.get(peer.getAddress().toString());
-                p.activate();
+                peers.get(peer.getAddress().toString()).activate();
             }
 
         } finally {
@@ -176,7 +176,8 @@ public class Network {
                     for (Peer peer : peers) {
                         Duration duration = Duration.between(peer.getTimeStamp(), LocalDateTime.now());
                         if (duration.toMillis() > deadTime) {
-                            System.out.println("(" + LocalDateTime.now() + ") Peer desconectado: " + peer.getAddress().toString());
+                            System.out.println("(" + LocalDateTime.now() +
+                                    ") Peer desconectado: " + peer.getAddress().toString());
                             this.peers.get(peer.getAddress().toString()).deactivate();
                         }
                     }
@@ -245,17 +246,11 @@ public class Network {
      * @param peers Lista de peers a adicionar.
      */
     public void addPeers(List<InetAddress> peers) {
-        try {
-            lock();
-            for (InetAddress peer : peers) {
-                if (!this.peers.containsKey(peer.toString())) {
-                    Peer newPeer = new Peer(peer, LocalDateTime.now());
-                    addPeer(newPeer);
-                }
-            }
-        } finally {
-            unlock();
+        for (InetAddress peer : peers) {
+            Peer newPeer = new Peer(peer,LocalDateTime.now());
+            addPeer(newPeer);
         }
+
     }
 
     /**
@@ -269,12 +264,10 @@ public class Network {
                     List<Peer> peers = new ArrayList<>(this.peers.values());
                     Message ping = new Message(Variables.PING, null);
                     for (Peer p : peers) {
-                        if (p.isON()) {
-                            try {
-                                sendSimpleMessage(ping, p.getAddress());
-                            } catch (IOException e) {
-                                System.out.println("Não foi possível enviar o ping para " + p.getAddress() + ".");
-                            }
+                        try {
+                            sendSimpleMessage(ping, p.getAddress());
+                        } catch (IOException e) {
+                            System.out.println("Não foi possível enviar o ping para " + p.getAddress() + ".");
                         }
                     }
                 } finally {
