@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Network {
     private static Network instance = null;
     private final ReentrantLock lock = new ReentrantLock();
-    private InetAddress myAddress;
+    private String myAddress;
     private int helloTime = Variables.HELLO_TIME;
     private int deadTime = Variables.DEAD_TIME;
     private Map<String, Peer> peers;
@@ -23,7 +23,7 @@ public class Network {
         this.peers = new TreeMap<>();
         try {
             InetAddress address = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS)).get(0);
-            this.myAddress = InetAddress.getByName(address.toString().split("%")[0]);
+            this.myAddress = address.toString().split("%")[0];
             System.out.println("lol"+myAddress);
         } catch (Exception ignored) {
             System.out.println("deu coco");
@@ -286,7 +286,7 @@ public class Network {
                         System.out.println("peer: "+p.getAddress().getHostName());
                         //Não enviar ping para si próprio
                         if (p.getAddress().isLinkLocalAddress()
-                                || p.getAddress().getHostName().equals(myAddress.getHostName())) {
+                                || p.getAddress().getHostName().equals(myAddress)){
                             continue;
                         }
                         try {
