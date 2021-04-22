@@ -23,8 +23,8 @@ public class Network {
         this.peers = new TreeMap<>();
         try {
             InetAddress address = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS)).get(0);
-            System.out.println("!!!!!" +address.getHostName());
-            this.myAddress = address;
+            System.out.println("!!!!!" +address.toString().split("%")[0]);
+            this.myAddress = InetAddress.getByName(address.toString().split("%")[0]);
         } catch (Exception ignored) {
         }
         obtainPeersOnMulticast();
