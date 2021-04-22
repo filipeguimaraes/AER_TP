@@ -368,6 +368,7 @@ public class Network {
     }
 
     public void sendSearch(String query) {
+        System.out.println("Searching for "+query+"...");
         Message search = new Message(Variables.QUERY,query);
         try {
             lock();
@@ -387,7 +388,9 @@ public class Network {
     }
 
     public void searchFile(String file, InetAddress requestOrigin){
+        System.out.println("Recebi "+file);
         if (files.containsKey(file)){
+            System.out.println("Eu tenho");
             try {
                 sendSimpleMessage(
                         new Message(Variables.QUERY_RESPONSE, "I have the file ("+file+")"),

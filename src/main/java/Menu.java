@@ -26,7 +26,7 @@ public class Menu {
                     Network.getInstance().printDisconnectedPeers();
                     break;
                 case 3:
-                    System.out.print("Query: ");
+                    System.out.println("Query: ");
                     Scanner s3 = new Scanner(System.in);
                     Network.getInstance().sendSearch(s3.nextLine());
                     break;
