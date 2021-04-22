@@ -280,6 +280,7 @@ public class Network {
                     List<Peer> peers = new ArrayList<>(this.peers.values());
                     Message ping = new Message(Variables.PING, null);
                     for (Peer p : peers) {
+                        System.out.println("mypeer: "+myAddress);
                         System.out.println("peer: "+p.getAddress().getHostName());
                         //Não enviar ping para si próprio
                         if (p.getAddress().isLinkLocalAddress()
