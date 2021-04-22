@@ -1,18 +1,17 @@
 import java.io.Serializable;
+import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Message implements Serializable {
 
-    //Integer id;
     int type;
     String message;
-    List<MessagePlugin> pluginList;
 
 
-    public Message(int type, String message, List<MessagePlugin> pluginList) {
+    public Message(int type, String message) {
         this.type = type;
         this.message = message;
-        this.pluginList = pluginList;
     }
 
     public Integer getType() {
@@ -31,11 +30,22 @@ public class Message implements Serializable {
         this.message = message;
     }
 
-    public List<MessagePlugin> getPluginList() {
-        return pluginList;
-    }
+    /**
+     * Usado caso seja uma mensagem de troca de peers para separar os diferentes peers
+     * na mensagem.
+     * @return Lista de peers.
+     * @throws Exception Caso este método seja usado num tipo de mensagem inválido.
+     */
+    public List<InetAddress> getPeers() throws Exception {
+        if(!(this.type == Variables.PEERS))
+            throw new Exception("Tipo de mensagem inválido!");
 
-    public void setPluginList(List<MessagePlugin> pluginList) {
-        this.pluginList = pluginList;
+        List<InetAddress> peers = new ArrayList<>();
+
+        for (String s : message.split(";")) {
+            peers.add(InetAddress.getByName(s));
+        }
+
+        return peers;
     }
 }

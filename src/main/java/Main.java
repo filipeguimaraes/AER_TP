@@ -10,7 +10,7 @@ public class Main {
         new Thread(() -> {
             while (true) {
                 try {
-                    p2p.sendHellos();
+                    p2p.obtainPeersOnMulticast();
                     Thread.sleep(2000);
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -1,6 +1,8 @@
-/home/core/AER_TP/src/main/java/Main.java
-/home/core/AER_TP/src/main/java/Receive.java
-/home/core/AER_TP/src/main/java/Rede.java
-/home/core/AER_TP/src/main/java/Peer.java
-/home/core/AER_TP/src/main/java/Variables.java
-/home/core/AER_TP/src/main/java/Send.java
+/home/wtv/universidade/2semestre/AER/AER_TP/src/main/java/Variables.java
+/home/wtv/universidade/2semestre/AER/AER_TP/src/main/java/Peer.java
+/home/wtv/universidade/2semestre/AER/AER_TP/src/main/java/Network.java
+/home/wtv/universidade/2semestre/AER/AER_TP/src/main/java/MessagePlugin.java
+/home/wtv/universidade/2semestre/AER/AER_TP/src/main/java/Main.java
+/home/wtv/universidade/2semestre/AER/AER_TP/src/main/java/Multiplexer.java
+/home/wtv/universidade/2semestre/AER/AER_TP/src/main/java/Message.java
+/home/wtv/universidade/2semestre/AER/AER_TP/src/main/java/Menu.java

@@ -7,6 +7,7 @@
     <groupId>UMINHO</groupId>
     <artifactId>AER_TP</artifactId>
     <version>1.0-SNAPSHOT</version>
+
     <dependencies>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>

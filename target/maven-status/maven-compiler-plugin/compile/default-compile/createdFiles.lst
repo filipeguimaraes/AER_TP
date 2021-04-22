@@ -1,6 +1,8 @@
-Peer.class
+Network.class
 Main.class
 Variables.class
-Receive.class
-Rede.class
-Send.class
+Peer.class
+Message.class
+Menu.class
+Multiplexer.class
+MessagePlugin.class

@@ -1,3 +1,8 @@
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.*;
 import java.net.*;
 import java.time.Duration;
@@ -5,26 +10,27 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 public class Network {
     private static Network instance = null;
+    private final ReentrantLock lock = new ReentrantLock();
     private int helloTime = Variables.HELLO_TIME;
     private int deadTime = Variables.DEAD_TIME;
-    private final ReentrantLock lock = new ReentrantLock();
     private Map<String, Peer> peers;
 
 
     private Network() {
         this.peers = new TreeMap<>();
-        sendHellos();
+        obtainPeersOnMulticast();
         receiveMulticast();
         killPeers();
+        sendPings();
     }
 
+    /**
+     * Obter a instância única da rede p2p.
+     *
+     * @return Instância única da rede.
+     */
     public static Network getInstance() {
         if (instance == null) {
             instance = new Network();
@@ -33,6 +39,8 @@ public class Network {
     }
 
     /**
+     * Obter os endereços multicast no nodo local.
+     *
      * @param group MULTICAST ADDRESS
      * @return Lista de endereços na rede
      */
@@ -66,6 +74,9 @@ public class Network {
     }
 
 
+    /**
+     * Método para estar à escuta de mensagens.
+     */
     public void receiveMulticast() {
         new Thread(() -> {
             try {
@@ -73,7 +84,6 @@ public class Network {
 
                 MulticastSocket ms = new MulticastSocket(Variables.MULTICAST_PORT);
                 ms.joinGroup(group);
-
 
 
                 while (true) {
@@ -85,7 +95,7 @@ public class Network {
                     ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(bais));
                     Message message = (Message) ois.readObject();
 
-                    Multiplexer.receive(message,dp.getAddress());
+                    Multiplexer.receive(message, dp.getAddress());
                 }
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -94,13 +104,17 @@ public class Network {
         }).start();
     }
 
-    public void sendHellos() {
+
+    /**
+     * Método que obtém peers diretamente conectados usando o multicast.
+     */
+    public void obtainPeersOnMulticast() {
         new Thread(() -> {
             while (true) {
                 try {
                     List<InetAddress> addrs = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS));
 
-                    Message hello = new Message(Variables.HELLO,null,null);
+                    Message hello = new Message(Variables.HELLO, null);
                     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     final ObjectOutputStream oos = new ObjectOutputStream(baos);
                     oos.writeObject(hello);
@@ -128,21 +142,30 @@ public class Network {
 
     }
 
+    /**
+     * Adiciona um peer á lista de peers atualizando o timestamp.
+     *
+     * @param peer Peer a ser adicionado.
+     */
     public void addPeer(Peer peer) {
         try {
             lock();
             if (!peers.containsKey(peer.getAddress().toString())) {
                 peers.put(peer.getAddress().toString(), peer);
-                System.out.println("("+LocalDateTime.now()+") Add peer: " + peer.getAddress().toString());
+                System.out.println("(" + LocalDateTime.now() + ") Add peer: " + peer.getAddress().toString());
             } else {
                 peers.remove(peer.getAddress().toString());
                 peers.put(peer.getAddress().toString(), peer);
             }
-        }finally {
+        } finally {
             unlock();
         }
     }
 
+    /**
+     * Serviço para regularmente pesquisar por peers desconectados, ou seja,
+     * com um timestamp mais antigo do que o predefinido.
+     */
     public void killPeers() {
         new Thread(() -> {
             while (true) {
@@ -152,22 +175,30 @@ public class Network {
                     for (Peer peer : peers) {
                         Duration duration = Duration.between(peer.getAddDate(), LocalDateTime.now());
                         if (duration.toMillis() > deadTime) {
-                            System.out.println("("+LocalDateTime.now()+") Peer desconectado: " + peer.getAddress().toString());
+                            System.out.println("(" + LocalDateTime.now() + ") Peer desconectado: " + peer.getAddress().toString());
                             this.peers.remove(peer.getAddress().toString());
                         }
                     }
-                }finally {
+                } finally {
                     unlock();
                 }
                 try {
                     Thread.sleep(helloTime);
-                } catch (Exception ignore) {}
+                } catch (Exception ignore) {
+                }
 
             }
         }).start();
     }
 
-    public void sendSimpleMessage(Message message,InetAddress address) throws IOException {
+    /**
+     * Método para enviar uma mensagem ao endereço especificado.
+     *
+     * @param message Objeto mensagem a enviar.
+     * @param address Endereço de destino.
+     * @throws IOException Caso haja problema a enviar a mensagem.
+     */
+    public void sendSimpleMessage(Message message, InetAddress address) throws IOException {
 
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         final ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -177,44 +208,88 @@ public class Network {
         DatagramSocket ds = new DatagramSocket();
 
         DatagramPacket dp = new DatagramPacket(
-                    data,
-                    data.length,
-                    address,
-                    Variables.MULTICAST_PORT);
+                data,
+                data.length,
+                address,
+                Variables.MULTICAST_PORT);
         ds.send(dp);
 
         ds.close();
     }
 
+    /**
+     * Carrega peers manualmente especificados no ficheiro de configuração.
+     *
+     * @param path Caminho para o ficheiro de configuração.
+     * @throws IOException    Caso não seja possível carregar o ficheiro.
+     * @throws ParseException Caso haja problemas em processar o JSON.
+     */
     public void loadPeersFromConfig(String path) throws IOException, ParseException {
         JSONParser parser = new JSONParser();
-        System.out.println("1");
         JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(path));
-        System.out.println("2");
         JSONArray jsonArray = (JSONArray) jsonObject.get("nodes");
-        System.out.println("3");
 
         for (String s : (Iterable<String>) jsonArray) {
-            Message m = new Message(Variables.ACK,null,null);
-            sendSimpleMessage(m,InetAddress.getByName(s));
+            Message m = new Message(Variables.PING, null);
+            sendSimpleMessage(m, InetAddress.getByName(s));
         }
 
     }
 
+    /**
+     * Adiciona aos peers conhecidos a lista passada em argumento.
+     *
+     * @param peers Lista de peers a adicionar.
+     */
+    public void addPeers(List<InetAddress> peers) {
+        try {
+            lock();
+            for (InetAddress peer : peers) {
+                if (!this.peers.containsKey(peer.toString())) {
+                    Peer newPeer = new Peer(peer, LocalDateTime.now());
+                    this.peers.put(newPeer.getAddress().toString(), newPeer);
+                }
+            }
+        } finally {
+            unlock();
+        }
+    }
 
-    public void lock(){
+    /**
+     * Função para enviar mensagens para verificar se algum peer se desconectou.
+     */
+    public void sendPings() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    lock();
+                    List<Peer> peers = new ArrayList<>(this.peers.values());
+                    Message ping = new Message(Variables.PING, null);
+                    for (Peer p : peers) {
+                        try {
+                            sendSimpleMessage(ping, p.getAddress());
+                        } catch (IOException e) {
+                            System.out.println("Não foi possível enviar o ping para " + p.getAddress() + ".");
+                        }
+                    }
+                } finally {
+                    unlock();
+                }
+            }
+        }).start();
+
+    }
+    
+
+    //*************************************************//
+    // Métodos de controlo de acesso à lista de peers. //
+    //*************************************************//
+    public void lock() {
         this.lock.lock();
     }
 
-    public void unlock(){
+    public void unlock() {
         this.lock.unlock();
     }
 
-    public void setHelloTime(int helloTime) {
-        this.helloTime = helloTime;
-    }
-
-    public void setDeadTime(int deadTime) {
-        this.deadTime = deadTime;
-    }
 }
