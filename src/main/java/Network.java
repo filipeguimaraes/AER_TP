@@ -12,6 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Network {
     private static Network instance = null;
+    private InetAddress myAddress = null;
     private final ReentrantLock lock = new ReentrantLock();
     private int helloTime = Variables.HELLO_TIME;
     private int deadTime = Variables.DEAD_TIME;
@@ -20,6 +21,9 @@ public class Network {
 
     private Network() {
         this.peers = new TreeMap<>();
+        try {
+            this.myAddress = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS)).get(0);
+        } catch (Exception ignored) {}
         obtainPeersOnMulticast();
         receiveMulticast();
         killPeers();
@@ -44,7 +48,7 @@ public class Network {
      * @param group MULTICAST ADDRESS
      * @return Lista de endereços na rede
      */
-    public static List<InetAddress> obtainValidAddresses(InetAddress group) throws SocketException {
+    public List<InetAddress> obtainValidAddresses(InetAddress group) throws SocketException {
         List<InetAddress> result = new ArrayList<>();
 
         //verify if group is a multicast address
@@ -266,6 +270,10 @@ public class Network {
                     List<Peer> peers = new ArrayList<>(this.peers.values());
                     Message ping = new Message(Variables.PING, null);
                     for (Peer p : peers) {
+                        //Não enviar ping para si próprio
+                        if (p.getAddress().toString().equals(myAddress.toString())){
+                            continue;
+                        }
                         try {
                             sendSimpleMessage(ping, p.getAddress());
                         } catch (IOException e) {
@@ -275,11 +283,14 @@ public class Network {
                 } finally {
                     unlock();
                 }
+                try {
+                    Thread.sleep(Variables.HELLO_TIME);
+                } catch (Exception ignored) {}
             }
         }).start();
 
     }
-    
+
 
     //*************************************************//
     // Métodos de controlo de acesso à lista de peers. //
