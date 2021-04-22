@@ -10,7 +10,9 @@ public class Multiplexer {
 
         switch (message.getType()) {
             case Variables.HELLO:
-                network.addPeer(new Peer(originAddress, LocalDateTime.now()));
+                if (!originAddress.toString().contains("localhost")) {
+                    network.addPeer(new Peer(originAddress, LocalDateTime.now()));
+                }
                 break;
             case Variables.QUERY:
                 System.out.println("Recebi uma query!");

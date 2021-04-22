@@ -116,7 +116,6 @@ public class Network {
      */
     public void obtainPeersOnMulticast() {
         new Thread(() -> {
-            while (true) {
                 try {
                     List<InetAddress> addrs = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS));
 
@@ -139,11 +138,9 @@ public class Network {
 
                     }
                     ms.close();
-                    Thread.sleep(helloTime);
                 } catch (Exception e) {
                     System.out.println("obtainPeersOnMulticast: " + e.getMessage());
                 }
-            }
         }).start();
 
     }
