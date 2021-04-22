@@ -13,7 +13,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Network {
     private static Network instance = null;
     private final ReentrantLock lock = new ReentrantLock();
-    private String myAddress;
     private int helloTime = Variables.HELLO_TIME;
     private int deadTime = Variables.DEAD_TIME;
     private Map<String, Peer> peers;
@@ -21,11 +20,6 @@ public class Network {
 
     private Network() {
         this.peers = new TreeMap<>();
-        try {
-            InetAddress address = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS)).get(0);
-            this.myAddress = (address.toString().split("%")[0]).split("/")[1];
-        } catch (Exception ignored) {
-        }
         obtainPeersOnMulticast();
         receiveMulticast();
         killPeers();
@@ -153,11 +147,6 @@ public class Network {
     public void addPeer(Peer peer) {
         try {
             lock();
-            /**
-             System.out.println("peer:"+peer.getAddress().getHostName());
-             System.out.println("my: "+myAddress);
-             if (!peer.getAddress().getHostName().equals(myAddress)) {
-             }**/
             if (!peers.containsKey(peer.getAddress().toString())) {
                 peers.put(peer.getAddress().toString(), peer);
                 System.out.println("(" + LocalDateTime.now() + ") Add peer: " + peer.getAddress().toString());

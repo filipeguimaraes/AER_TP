@@ -19,7 +19,7 @@ public class Multiplexer {
                 break;
             case Variables.PING:
                 Message hello = new Message(Variables.HELLO, null);
-                network.sendSimpleMessage(hello, InetAddress.getByName(message.getMessage()));
+                network.sendSimpleMessage(hello, originAddress);
                 break;
             case Variables.PEERS:
                 System.out.println("Recebi peers");
