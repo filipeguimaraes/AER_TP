@@ -104,7 +104,7 @@ public class Network {
                     Multiplexer.receive(message, dp.getAddress());
                 }
             } catch (Exception e) {
-                System.out.println("Receive Multicast:" + e.getMessage());
+                //System.out.println("Receive Multicast:" + e.getMessage());
             }
 
         }).start();
