@@ -235,10 +235,15 @@ public class Network {
         JSONArray jsonArray = (JSONArray) jsonObject.get("nodes");
 
         for (String s : (Iterable<String>) jsonArray) {
-            Peer newPeer = new Peer(InetAddress.getByName(s), LocalDateTime.now());
-            addPeer(newPeer);
-            Message hello = new Message(Variables.HELLO, null);
-            sendSimpleMessage(hello, newPeer.getAddress());
+            try {
+                Peer newPeer = new Peer(InetAddress.getByName(s), LocalDateTime.now());
+                addPeer(newPeer);
+                Message hello = new Message(Variables.HELLO, null);
+
+                sendSimpleMessage(hello, newPeer.getAddress());
+            } catch (IOException e) {
+                System.out.println("Cannot connect to address: " + s);
+            }
         }
     }
 
