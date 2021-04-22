@@ -104,7 +104,7 @@ public class Network {
                     Multiplexer.receive(message, dp.getAddress());
                 }
             } catch (Exception e) {
-                //System.out.println("Receive Multicast:" + e.getMessage());
+                System.out.println("Receive Multicast:" + e.getMessage());
             }
 
         }).start();
@@ -141,7 +141,7 @@ public class Network {
                     ms.close();
                     Thread.sleep(helloTime);
                 } catch (Exception e) {
-                    System.out.println("obtainPeersOnMulticast: "+e.getMessage());
+                    System.out.println("obtainPeersOnMulticast: " + e.getMessage());
                 }
             }
         }).start();
@@ -156,10 +156,13 @@ public class Network {
     public void addPeer(Peer peer) {
         try {
             lock();
-            if (peer.getAddress().isLinkLocalAddress()
-                    || peer.getAddress().getHostName().equals(myAddress.getHostName())) {
-                return;
-            }
+            /**
+
+             if (peer.getAddress().isLinkLocalAddress()
+             || peer.getAddress().getHostName().equals(myAddress.getHostName())) {
+             return;
+             }
+             **/
             if (!peers.containsKey(peer.getAddress().toString())) {
                 peers.put(peer.getAddress().toString(), peer);
                 System.out.println("(" + LocalDateTime.now() + ") Add peer: " + peer.getAddress().toString());
@@ -195,7 +198,7 @@ public class Network {
                 try {
                     Thread.sleep(helloTime);
                 } catch (Exception e) {
-                    System.out.println("killPeers: "+e.getMessage());
+                    System.out.println("killPeers: " + e.getMessage());
                 }
 
             }
@@ -293,7 +296,7 @@ public class Network {
                 try {
                     Thread.sleep(Variables.HELLO_TIME);
                 } catch (Exception e) {
-                    System.out.println("sendPings: "+e.getMessage());
+                    System.out.println("sendPings: " + e.getMessage());
                 }
             }
         }).start();
