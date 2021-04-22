@@ -26,6 +26,9 @@ public class Menu {
                     Network.getInstance().printDisconnectedPeers();
                     break;
                 case 3:
+                    System.out.print("Query: ");
+                    Scanner s3 = new Scanner(System.in);
+                    Network.getInstance().sendSearch(s3.nextLine());
                     break;
                 default:
                     System.out.println("Invalid option!");

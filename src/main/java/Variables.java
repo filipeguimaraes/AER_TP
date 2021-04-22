@@ -10,6 +10,7 @@ public class Variables {
     //TIPOS DE MENSAGENS
     public static final int HELLO = 1;
     public static final int QUERY = 2;
+    public static final int QUERY_RESPONSE = 5;
     public static final int PING = 3;
     public static final int PEERS = 4;
 

@@ -16,10 +16,12 @@ public class Network {
     private int helloTime = Variables.HELLO_TIME;
     private int deadTime = Variables.DEAD_TIME;
     private Map<String, Peer> peers;
+    private Map<String, File> files;
 
 
     private Network() {
         this.peers = new TreeMap<>();
+        this.files = new HashMap<>();
         obtainPeersOnMulticast();
         receiveMulticast();
         killPeers();
@@ -237,13 +239,29 @@ public class Network {
         for (String s : (Iterable<String>) jsonArray) {
             try {
                 Peer newPeer = new Peer(InetAddress.getByName(s), LocalDateTime.now());
-                addPeer(newPeer);
                 Message hello = new Message(Variables.HELLO, null);
-
                 sendSimpleMessage(hello, newPeer.getAddress());
+                addPeer(newPeer);
             } catch (IOException e) {
                 System.out.println("Cannot connect to address: " + s);
             }
+        }
+    }
+
+    /**
+     * Carrega ficheiros manualmente especificados no ficheiro de configuração.
+     *
+     * @param path Caminho para o ficheiro de configuração.
+     * @throws IOException    Caso não seja possível carregar o ficheiro.
+     * @throws ParseException Caso haja problemas em processar o JSON.
+     */
+    public void loadFilesFromConfig(String path) throws IOException, ParseException {
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(path));
+        JSONArray jsonArray = (JSONArray) jsonObject.get("files");
+
+        for (String s : (Iterable<String>) jsonArray) {
+            files.put(s,null);
         }
     }
 
@@ -346,6 +364,37 @@ public class Network {
 
         } finally {
             unlock();
+        }
+    }
+
+    public void sendSearch(String query) {
+        Message search = new Message(Variables.QUERY,query);
+        try {
+            lock();
+            List<Peer> peers = new ArrayList<>(this.peers.values());
+            for (Peer p: peers) {
+                if (p.isON()){
+                    try {
+                        sendSimpleMessage(search,p.getAddress());
+                    } catch (IOException e) {
+                        System.out.println("Cannot send query to "+p.getAddress());
+                    }
+                }
+            }
+        }finally {
+            unlock();
+        }
+    }
+
+    public void searchFile(String file, InetAddress requestOrigin){
+        if (files.containsKey(file)){
+            try {
+                sendSimpleMessage(
+                        new Message(Variables.QUERY_RESPONSE, "I have the file ("+file+")"),
+                        requestOrigin);
+            } catch (IOException e) {
+                System.out.println("Cannot response to "+requestOrigin.toString());
+            }
         }
     }
 

@@ -15,8 +15,10 @@ public class Multiplexer {
                 }
                 break;
             case Variables.QUERY:
-                System.out.println("Recebi uma query!");
+                network.searchFile(message.getMessage(), originAddress);
                 break;
+            case Variables.QUERY_RESPONSE:
+                System.out.println(originAddress+": "+message.getMessage());
             case Variables.PING:
                 Message hello = new Message(Variables.HELLO, null);
                 network.sendSimpleMessage(hello, originAddress);
