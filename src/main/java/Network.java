@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Network {
     private static Network instance = null;
     private final ReentrantLock lock = new ReentrantLock();
-    private InetAddress myAddress = null;
+    private InetAddress myAddress;
     private int helloTime = Variables.HELLO_TIME;
     private int deadTime = Variables.DEAD_TIME;
     private Map<String, Peer> peers;
@@ -104,7 +104,7 @@ public class Network {
                     Multiplexer.receive(message, dp.getAddress());
                 }
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.out.println("Receive Multicast:" + e.getMessage());
             }
 
         }).start();
@@ -141,7 +141,7 @@ public class Network {
                     ms.close();
                     Thread.sleep(helloTime);
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    System.out.println("obtainPeersOnMulticast: "+e.getMessage());
                 }
             }
         }).start();
@@ -194,7 +194,8 @@ public class Network {
                 }
                 try {
                     Thread.sleep(helloTime);
-                } catch (Exception ignore) {
+                } catch (Exception e) {
+                    System.out.println("killPeers: "+e.getMessage());
                 }
 
             }
@@ -291,7 +292,8 @@ public class Network {
                 }
                 try {
                     Thread.sleep(Variables.HELLO_TIME);
-                } catch (Exception ignored) {
+                } catch (Exception e) {
+                    System.out.println("sendPings: "+e.getMessage());
                 }
             }
         }).start();

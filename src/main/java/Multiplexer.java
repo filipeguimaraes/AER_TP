@@ -1,15 +1,14 @@
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class Multiplexer {
 
-    public static void receive(Message message,InetAddress originAddress) throws IOException {
+    public static void receive(Message message, InetAddress originAddress) throws IOException {
         Network network = Network.getInstance();
 
-        switch (message.getType()){
+        switch (message.getType()) {
             case Variables.HELLO:
                 network.addPeer(new Peer(originAddress, LocalDateTime.now()));
                 break;
@@ -17,8 +16,8 @@ public class Multiplexer {
                 System.out.println("Recebi uma query!");
                 break;
             case Variables.PING:
-                Message hello = new Message(Variables.HELLO,null);
-                network.sendSimpleMessage(hello,InetAddress.getByName(message.getMessage()));
+                Message hello = new Message(Variables.HELLO, null);
+                network.sendSimpleMessage(hello, InetAddress.getByName(message.getMessage()));
                 break;
             case Variables.PEERS:
                 System.out.println("Recebi peers");
@@ -26,12 +25,12 @@ public class Multiplexer {
                 try {
                     peers = message.getPeers();
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    System.out.println("receive: " + e.getMessage());
                 }
                 network.addPeers(peers);
                 break;
             default:
-                System.out.println("Recebeu uma mensagem inválida!");;
+                System.out.println("Recebeu uma mensagem inválida!");
                 break;
         }
 

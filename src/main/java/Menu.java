@@ -20,7 +20,9 @@ public class Menu {
 
         Scanner s = new Scanner(System.in);
         if (s.nextLine().equals("m")) {
-            menu();
+            Menu.menu();
+        } else {
+            System.out.println("(Type m to access the menu)");
         }
     }
 
