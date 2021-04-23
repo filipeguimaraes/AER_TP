@@ -18,7 +18,7 @@ public class Multiplexer {
                 network.searchFile(message.getMessage(), originAddress);
                 break;
             case Variables.QUERY_RESPONSE:
-                System.out.println(originAddress+": "+message.getMessage());
+                network.sourcePeerFile(message.getMessage(),originAddress);
             case Variables.PING:
                 Message hello = new Message(Variables.HELLO, null);
                 network.sendSimpleMessage(hello, originAddress);

@@ -3,6 +3,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.awt.image.AreaAveragingScaleFilter;
 import java.io.*;
 import java.net.*;
 import java.time.Duration;
@@ -18,10 +19,13 @@ public class Network {
     private Map<String, Peer> peers;
     private Map<String, File> files;
 
+    private Map<String, List<Peer>> filePeers;
+
 
     private Network() {
         this.peers = new TreeMap<>();
         this.files = new HashMap<>();
+        this.filePeers = new HashMap<>();
         obtainPeersOnMulticast();
         receiveMulticast();
         killPeers();
@@ -403,6 +407,18 @@ public class Network {
 
         for (String s : (Iterable<String>) jsonArray) {
             files.put(s, null);
+        }
+    }
+
+    public void sourcePeerFile(String file, InetAddress peer){
+        if (filePeers.containsKey(file)){
+            System.out.println("Add peer as file("+file+"): "+peer.toString());
+            filePeers.get(file).add(peers.get(peer.toString()));
+        } else {
+            System.out.println("First peer with file(\"+file+\"): "+peer);
+            List<Peer> filep = new ArrayList<>();
+            filep.add(peers.get(peer.toString()));
+            filePeers.put(file,filep);
         }
     }
 
