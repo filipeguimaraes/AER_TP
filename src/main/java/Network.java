@@ -422,6 +422,25 @@ public class Network {
         }
     }
 
+    public void printFilesKnown(){
+        try {
+            lock();
+            List<String> files = new ArrayList<>(filePeers.keySet());
+            int i = 1;
+            System.out.println("---------------------------------------");
+            for (String file : files){
+                System.out.println("["+file+"]: "+filePeers.get(file).toString());
+                i++;
+            }
+            if(i == 1){
+                System.out.println("No files.");
+            }
+            System.out.println("---------------------------------------");
+        } finally {
+            unlock();
+        }
+    }
+
     //*************************************************//
     // Métodos de controlo de acesso à lista de peers. //
     //*************************************************//

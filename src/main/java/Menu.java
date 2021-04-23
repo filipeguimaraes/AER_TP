@@ -14,6 +14,7 @@ public class Menu {
             System.out.println("# 1: Show connected peers.         #");
             System.out.println("# 2: Show disconnected peers.      #");
             System.out.println("# 3: Search a file in the network. #");
+            System.out.println("# 4: List files known.             #");
             System.out.println("####################################");
 
             System.out.println("Option:");
@@ -31,8 +32,12 @@ public class Menu {
                     Scanner s3 = new Scanner(System.in);
                     Network.getInstance().sendSearch(s3.nextLine());
                     break;
+                case "4":
+                    Network.getInstance().printFilesKnown();
+                    break;
                 default:
                     System.out.println("Invalid option!");
+                    break;
             }
         }
         menu();

@@ -42,4 +42,13 @@ public class Peer {
     public boolean isON(){
         return this.status == Variables.ON;
     }
+
+    @Override
+    public String toString() {
+        String status = this.status == Variables.ON ? "ON" : "OFF";
+        return "{" +
+                "address: " + address +
+                ", status: " + status  +
+                '}';
+    }
 }
