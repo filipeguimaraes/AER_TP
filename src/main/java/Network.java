@@ -77,7 +77,7 @@ public class Network {
 
 
     /**
-     * Método para estar à escuta de mensagens.
+     * Serviço para estar à escuta de mensagens.
      */
     public void receiveMulticast() {
         new Thread(() -> {
@@ -108,7 +108,7 @@ public class Network {
 
 
     /**
-     * Método que obtém peers diretamente conectados usando o multicast.
+     * Serviço que obtém peers diretamente conectados usando o multicast.
      */
     public void obtainPeersOnMulticast() {
         new Thread(() -> {
@@ -224,46 +224,7 @@ public class Network {
         ds.close();
     }
 
-    /**
-     * Carrega peers manualmente especificados no ficheiro de configuração.
-     *
-     * @param path Caminho para o ficheiro de configuração.
-     * @throws IOException    Caso não seja possível carregar o ficheiro.
-     * @throws ParseException Caso haja problemas em processar o JSON.
-     */
-    public void loadPeersFromConfig(String path) throws IOException, ParseException {
-        JSONParser parser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(path));
-        JSONArray jsonArray = (JSONArray) jsonObject.get("nodes");
 
-        for (String s : (Iterable<String>) jsonArray) {
-            try {
-                Peer newPeer = new Peer(InetAddress.getByName(s), LocalDateTime.now());
-                Message hello = new Message(Variables.HELLO, null);
-                sendSimpleMessage(hello, newPeer.getAddress());
-                addPeer(newPeer);
-            } catch (IOException e) {
-                System.out.println("Cannot connect to address: " + s);
-            }
-        }
-    }
-
-    /**
-     * Carrega ficheiros manualmente especificados no ficheiro de configuração.
-     *
-     * @param path Caminho para o ficheiro de configuração.
-     * @throws IOException    Caso não seja possível carregar o ficheiro.
-     * @throws ParseException Caso haja problemas em processar o JSON.
-     */
-    public void loadFilesFromConfig(String path) throws IOException, ParseException {
-        JSONParser parser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(path));
-        JSONArray jsonArray = (JSONArray) jsonObject.get("files");
-
-        for (String s : (Iterable<String>) jsonArray) {
-            files.put(s,null);
-        }
-    }
 
     /**
      * Adiciona aos peers conhecidos a lista passada em argumento.
@@ -368,36 +329,80 @@ public class Network {
     }
 
     public void sendSearch(String query) {
-        System.out.println("Searching for "+query+"...");
-        Message search = new Message(Variables.QUERY,query);
+        System.out.println("Searching for " + query + "...");
+        Message search = new Message(Variables.QUERY, query);
         try {
             lock();
             List<Peer> peers = new ArrayList<>(this.peers.values());
-            for (Peer p: peers) {
-                if (p.isON()){
+            for (Peer p : peers) {
+                if (p.isON()) {
                     try {
-                        sendSimpleMessage(search,p.getAddress());
+                        sendSimpleMessage(search, p.getAddress());
                     } catch (IOException e) {
-                        System.out.println("Cannot send query to "+p.getAddress());
+                        System.out.println("Cannot send query to " + p.getAddress());
                     }
                 }
             }
-        }finally {
+        } finally {
             unlock();
         }
     }
 
-    public void searchFile(String file, InetAddress requestOrigin){
-        System.out.println("Recebi "+file);
-        if (files.containsKey(file)){
-            System.out.println("Eu tenho");
-            try {
-                sendSimpleMessage(
-                        new Message(Variables.QUERY_RESPONSE, "I have the file ("+file+")"),
-                        requestOrigin);
-            } catch (IOException e) {
-                System.out.println("Cannot response to "+requestOrigin.toString());
+    public void searchFile(String file, InetAddress requestOrigin) {
+        System.out.println("Recebi " + file);
+        List<String> keys = new ArrayList<>(this.files.keySet());
+        for (String key : keys) {
+            if (key.contains(file)) {
+                try {
+                    //Caso tenha registo do ficheiro envia a key correspondente!
+                    sendSimpleMessage(new Message(Variables.QUERY_RESPONSE, file ), requestOrigin);
+                } catch (IOException e) {
+                    System.out.println("Cannot response to " + requestOrigin.toString());
+                }
+                break;
             }
+        }
+
+    }
+
+    /**
+     * Carrega peers manualmente especificados no ficheiro de configuração.
+     *
+     * @param path Caminho para o ficheiro de configuração.
+     * @throws IOException    Caso não seja possível carregar o ficheiro.
+     * @throws ParseException Caso haja problemas em processar o JSON.
+     */
+    public void loadPeersFromConfig(String path) throws IOException, ParseException {
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(path));
+        JSONArray jsonArray = (JSONArray) jsonObject.get("nodes");
+
+        for (String s : (Iterable<String>) jsonArray) {
+            try {
+                Peer newPeer = new Peer(InetAddress.getByName(s), LocalDateTime.now());
+                Message hello = new Message(Variables.HELLO, null);
+                sendSimpleMessage(hello, newPeer.getAddress());
+                addPeer(newPeer);
+            } catch (IOException e) {
+                System.out.println("Cannot connect to address: " + s);
+            }
+        }
+    }
+
+    /**
+     * Carrega ficheiros manualmente especificados no ficheiro de configuração.
+     *
+     * @param path Caminho para o ficheiro de configuração.
+     * @throws IOException    Caso não seja possível carregar o ficheiro.
+     * @throws ParseException Caso haja problemas em processar o JSON.
+     */
+    public void loadFilesFromConfig(String path) throws IOException, ParseException {
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(path));
+        JSONArray jsonArray = (JSONArray) jsonObject.get("files");
+
+        for (String s : (Iterable<String>) jsonArray) {
+            files.put(s, null);
         }
     }
 
