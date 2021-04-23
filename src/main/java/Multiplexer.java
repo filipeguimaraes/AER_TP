@@ -34,7 +34,7 @@ public class Multiplexer {
                 network.addPeers(peers);
                 break;
             case Variables.REQUEST:
-                FileTransfer.send(message.getMessage(), originAddress);
+                FileTransfer.send(message.getMessage());
                 break;
             default:
                 System.out.println("Recebeu uma mensagem inválida!");
