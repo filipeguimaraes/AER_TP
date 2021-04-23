@@ -441,6 +441,20 @@ public class Network {
         }
     }
 
+    public void sendRequestFile(String file) throws IOException {
+        Message request = new Message(Variables.REQUEST,"file");
+
+        for (Peer peer : this.filePeers.get(file)){
+           if (peer.isON()){
+               sendSimpleMessage(request,peer.getAddress());
+               FileTransfer.receive((new File(file)).getName(),peer.getAddress());
+               return;
+           }
+        }
+
+        System.out.println("No peers available to download the file!");
+    }
+
     //*************************************************//
     // Métodos de controlo de acesso à lista de peers. //
     //*************************************************//

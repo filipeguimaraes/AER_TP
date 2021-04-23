@@ -18,7 +18,7 @@ public class Multiplexer {
                 network.searchFile(message.getMessage(), originAddress);
                 break;
             case Variables.QUERY_RESPONSE:
-                network.sourcePeerFile(message.getMessage(),originAddress);
+                network.sourcePeerFile(message.getMessage(), originAddress);
             case Variables.PING:
                 Message hello = new Message(Variables.HELLO, null);
                 network.sendSimpleMessage(hello, originAddress);
@@ -32,6 +32,9 @@ public class Multiplexer {
                     System.out.println("receive: " + e.getMessage());
                 }
                 network.addPeers(peers);
+                break;
+            case Variables.REQUEST:
+                FileTransfer.send(message.getMessage(), originAddress);
                 break;
             default:
                 System.out.println("Recebeu uma mensagem inválida!");
