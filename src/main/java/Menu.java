@@ -33,7 +33,9 @@ public class Menu {
                     Network.getInstance().sendSearch(s3.nextLine());
                     break;
                 case "4":
-                    Network.getInstance().printFilesKnown();
+                    System.out.println("Path: ");
+                    Scanner s4 = new Scanner(System.in);
+                    Network.getInstance().sendRequestFile(s4.nextLine());
                     break;
                 default:
                     System.out.println("Invalid option!");
