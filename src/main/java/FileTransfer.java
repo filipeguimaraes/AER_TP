@@ -53,6 +53,7 @@ public class FileTransfer {
         Socket socket = new Socket(origin, 4444);
 
         File file = new File("/home/core/AER_TP/"+filename);
+        file.createNewFile();
         long length = file.length();
         byte[] bytes = new byte[16 * 1024];
         InputStream in = new FileInputStream(file);
