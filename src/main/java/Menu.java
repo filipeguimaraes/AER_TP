@@ -19,14 +19,14 @@ public class Menu {
             System.out.println("Option:");
 
             Scanner sc = new Scanner(System.in);
-            switch (sc.nextInt()) {
-                case 1:
+            switch (sc.nextLine()) {
+                case "1":
                     Network.getInstance().printConnectedPeers();
                     break;
-                case 2:
+                case "2":
                     Network.getInstance().printDisconnectedPeers();
                     break;
-                case 3:
+                case "3":
                     System.out.println("Query: ");
                     Scanner s3 = new Scanner(System.in);
                     Network.getInstance().sendSearch(s3.nextLine());
