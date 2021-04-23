@@ -442,7 +442,7 @@ public class Network {
     }
 
     public void sendRequestFile(String file) throws IOException {
-        Message request = new Message(Variables.REQUEST,"file");
+        Message request = new Message(Variables.REQUEST,file);
 
         for (Peer peer : this.filePeers.get(file)){
            if (peer.isON()){
