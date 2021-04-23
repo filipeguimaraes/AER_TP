@@ -52,7 +52,7 @@ public class FileTransfer {
     public static void receive(String filename, InetAddress origin) throws IOException {
         Socket socket = new Socket(origin, 4444);
 
-        File file = new File("/"+filename);
+        File file = new File("/home/core/AER_TP/"+filename);
         long length = file.length();
         byte[] bytes = new byte[16 * 1024];
         InputStream in = new FileInputStream(file);
