@@ -5,68 +5,75 @@ import java.net.Socket;
 
 public class FileTransfer {
 
-    public static void send(String path, InetAddress destiny) throws IOException {
-        ServerSocket serverSocket = null;
-
+    public static void send(String path) throws IOException {
+        FileInputStream fis = null;
+        BufferedInputStream bis = null;
+        OutputStream os = null;
+        ServerSocket servsock = null;
+        Socket sock = null;
         try {
-            serverSocket = new ServerSocket(4444);
-        } catch (IOException ex) {
-            System.out.println("Can't setup server on this port number. ");
+            servsock = new ServerSocket(1234);
+            while (true) {
+                System.out.println("Waiting...");
+                try {
+                    sock = servsock.accept();
+                    System.out.println("Accepted connection : " + sock);
+                    // send file
+                    File myFile = new File(path);
+                    byte[] mybytearray = new byte[(int) myFile.length()];
+                    fis = new FileInputStream(myFile);
+                    bis = new BufferedInputStream(fis);
+                    bis.read(mybytearray, 0, mybytearray.length);
+                    os = sock.getOutputStream();
+                    System.out.println("Sending " + path + "(" + mybytearray.length + " bytes)");
+                    os.write(mybytearray, 0, mybytearray.length);
+                    os.flush();
+                    System.out.println("Done.");
+                } finally {
+                    if (bis != null) bis.close();
+                    if (os != null) os.close();
+                    if (sock != null) sock.close();
+                }
+            }
+        } finally {
+            if (servsock != null) servsock.close();
         }
-
-        Socket socket = null;
-        InputStream in = null;
-        OutputStream out = null;
-
-        try {
-            socket = serverSocket.accept();
-        } catch (IOException ex) {
-            System.out.println("Can't accept client connection. ");
-        }
-
-        try {
-            in = socket.getInputStream();
-        } catch (IOException ex) {
-            System.out.println("Can't get socket input stream. ");
-        }
-
-        try {
-            out = new FileOutputStream(path);
-        } catch (FileNotFoundException ex) {
-            System.out.println("File not found. ");
-        }
-
-        byte[] bytes = new byte[16 * 1024];
-
-        int count;
-        while ((count = in.read(bytes)) > 0) {
-            out.write(bytes, 0, count);
-        }
-
-        out.close();
-        in.close();
-        socket.close();
-        serverSocket.close();
     }
 
     public static void receive(String filename, InetAddress origin) throws IOException {
-        Socket socket = new Socket(origin, 4444);
+        int bytesRead;
+        int current = 0;
+        FileOutputStream fos = null;
+        BufferedOutputStream bos = null;
+        Socket sock = null;
+        try {
+            sock = new Socket(origin, 1234);
+            System.out.println("Connecting...");
 
-        File file = new File("/home/core/AER_TP/"+filename);
-        file.createNewFile();
-        long length = file.length();
-        byte[] bytes = new byte[16 * 1024];
-        InputStream in = new FileInputStream(file);
-        OutputStream out = socket.getOutputStream();
+            // receive file
+            byte[] mybytearray = new byte[6022386];
+            InputStream is = sock.getInputStream();
+            fos = new FileOutputStream(filename);
+            bos = new BufferedOutputStream(fos);
+            bytesRead = is.read(mybytearray, 0, mybytearray.length);
+            current = bytesRead;
 
-        int count;
-        while ((count = in.read(bytes)) > 0) {
-            out.write(bytes, 0, count);
+            do {
+                bytesRead =
+                        is.read(mybytearray, current, (mybytearray.length - current));
+                if (bytesRead >= 0) current += bytesRead;
+            } while (bytesRead > -1);
+
+            bos.write(mybytearray, 0, current);
+            bos.flush();
+            System.out.println("File " + filename
+                    + " downloaded (" + current + " bytes read)");
+        } finally {
+            if (fos != null) fos.close();
+            if (bos != null) bos.close();
+            if (sock != null) sock.close();
         }
-
-        out.close();
-        in.close();
-        socket.close();
     }
-
 }
+
+
