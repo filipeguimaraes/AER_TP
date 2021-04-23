@@ -415,7 +415,7 @@ public class Network {
             System.out.println("Add peer as file("+file+"): "+peer.toString());
             filePeers.get(file).add(peers.get(peer.toString()));
         } else {
-            System.out.println("First peer with file(\"+file+\"): "+peer);
+            System.out.println("First peer with file("+file+"): "+peer);
             List<Peer> filep = new ArrayList<>();
             filep.add(peers.get(peer.toString()));
             filePeers.put(file,filep);
