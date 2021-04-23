@@ -9,6 +9,7 @@ public class Menu {
         if (!s.nextLine().equals("m")) {
             Menu.menu();
         } else {
+            clearScreen();
             System.out.println("####################################");
             System.out.println("# 1: Show connected peers.         #");
             System.out.println("# 2: Show disconnected peers.      #");
@@ -34,7 +35,6 @@ public class Menu {
                     System.out.println("Invalid option!");
             }
         }
-        clearScreen();
         menu();
     }
 
