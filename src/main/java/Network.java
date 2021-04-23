@@ -359,7 +359,7 @@ public class Network {
             if (key.contains(file)) {
                 try {
                     //Caso tenha registo do ficheiro envia a key correspondente!
-                    sendSimpleMessage(new Message(Variables.QUERY_RESPONSE, file ), requestOrigin);
+                    sendSimpleMessage(new Message(Variables.QUERY_RESPONSE, key ), requestOrigin);
                 } catch (IOException e) {
                     System.out.println("Cannot response to " + requestOrigin.toString());
                 }
