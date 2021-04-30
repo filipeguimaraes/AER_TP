@@ -1,3 +1,5 @@
+package network;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -6,7 +8,7 @@ import java.net.Socket;
 public class FileTransfer {
 
     public static void send(String path) throws IOException {
-        FileInputStream fis = null;
+        FileInputStream fis;
         BufferedInputStream bis = null;
         OutputStream os = null;
         ServerSocket servsock = null;

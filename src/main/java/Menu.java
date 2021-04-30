@@ -1,8 +1,15 @@
+import network.Network;
+
 import java.io.IOException;
 import java.util.Scanner;
 
 public class Menu {
 
+    /**
+     * Imprime o menu e recebe o input do utilizador.
+     *
+     * @throws IOException Exceção a chamar os respetivos métodos.
+     */
     public static void menu() throws IOException {
         System.out.println("(Type m to access the menu)");
         Scanner s = new Scanner(System.in);
@@ -46,6 +53,9 @@ public class Menu {
         menu();
     }
 
+    /**
+     * Limpa o terminal.
+     */
     public static void clearScreen() {
         System.out.print("\033[H\033[2J");
         System.out.flush();

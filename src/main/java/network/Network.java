@@ -1,9 +1,10 @@
+package network;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.awt.image.AreaAveragingScaleFilter;
 import java.io.*;
 import java.net.*;
 import java.time.Duration;
@@ -26,10 +27,6 @@ public class Network {
         this.peers = new TreeMap<>();
         this.files = new HashMap<>();
         this.filePeers = new HashMap<>();
-        obtainPeersOnMulticast();
-        receiveMulticast();
-        killPeers();
-        sendPings();
     }
 
     /**
@@ -45,113 +42,9 @@ public class Network {
     }
 
     /**
-     * Obter os endereços multicast no nodo local.
-     *
-     * @param group MULTICAST ADDRESS
-     * @return Lista de endereços na rede
-     */
-    public List<InetAddress> obtainValidAddresses(InetAddress group) throws SocketException {
-        List<InetAddress> result = new ArrayList<>();
-
-        //verify if group is a multicast address
-        if (group == null || !group.isMulticastAddress()) return result;
-
-        //obtain the network interfaces list
-        Enumeration<NetworkInterface> ifs = NetworkInterface.getNetworkInterfaces();
-        while (ifs.hasMoreElements()) {
-            NetworkInterface ni = ifs.nextElement();
-            //ignoring loopback, inactive interfaces and the interfaces that do not support multicast
-            if (ni.isLoopback() || !ni.isUp() || !ni.supportsMulticast()) {
-                continue;
-            }
-            Enumeration<InetAddress> addresses = ni.getInetAddresses();
-            while (addresses.hasMoreElements()) {
-                InetAddress addr = addresses.nextElement();
-                //including addresses of the same type of group address
-                if (group.getClass() != addr.getClass()) continue;
-                if ((group.isMCLinkLocal() && addr.isLinkLocalAddress())
-                        || (!group.isMCLinkLocal() && !addr.isLinkLocalAddress())) {
-                    result.add(addr);
-                }
-            }
-        }
-
-        return result;
-    }
-
-
-    /**
-     * Serviço para estar à escuta de mensagens.
-     */
-    public void receiveMulticast() {
-        new Thread(() -> {
-            try {
-                InetAddress group = InetAddress.getByName(Variables.MULTICAST_ADDRESS);
-
-                MulticastSocket ms = new MulticastSocket(Variables.MULTICAST_PORT);
-                ms.joinGroup(group);
-
-
-                while (true) {
-                    byte[] buffer = new byte[8192];
-                    DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
-                    ms.receive(dp);
-
-                    ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
-                    ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(bais));
-                    Message message = (Message) ois.readObject();
-
-                    Multiplexer.receive(message, dp.getAddress());
-                }
-            } catch (Exception e) {
-                System.out.println("Receive Multicast:" + e.getMessage());
-            }
-
-        }).start();
-    }
-
-
-    /**
-     * Serviço que obtém peers diretamente conectados usando o multicast.
-     */
-    public void obtainPeersOnMulticast() {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    List<InetAddress> addrs = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS));
-
-                    Message hello = new Message(Variables.HELLO, null);
-                    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    final ObjectOutputStream oos = new ObjectOutputStream(baos);
-                    oos.writeObject(hello);
-
-                    final byte[] data = baos.toByteArray();
-                    MulticastSocket ms = new MulticastSocket();
-                    DatagramPacket dp = new DatagramPacket(
-                            data,
-                            data.length,
-                            InetAddress.getByName(Variables.MULTICAST_ADDRESS),
-                            Variables.MULTICAST_PORT);
-
-                    for (InetAddress addr : addrs) {
-                        ms.setInterface(addr);
-                        ms.send(dp);
-
-                    }
-                    ms.close();
-                    Thread.sleep(Variables.HELLO_TIME);
-                } catch (Exception e) {
-                    System.out.println("obtainPeersOnMulticast: " + e.getMessage());
-                }
-            }
-        }).start();
-
-    }
-
-    /**
      * Adiciona um peer á lista de peers atualizando o timestamp.
      *
-     * @param peer Peer a ser adicionado.
+     * @param peer Network.Peer a ser adicionado.
      */
     public void addPeer(Peer peer) {
         try {
@@ -167,39 +60,6 @@ public class Network {
         } finally {
             unlock();
         }
-    }
-
-    /**
-     * Serviço para regularmente pesquisar por peers desconectados, ou seja,
-     * com um timestamp mais antigo do que o predefinido.
-     */
-    public void killPeers() {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    lock();
-                    ArrayList<Peer> peers = new ArrayList<>(this.peers.values());
-                    for (Peer peer : peers) {
-                        if (peer.isON()) {
-                            Duration duration = Duration.between(peer.getTimeStamp(), LocalDateTime.now());
-                            if (duration.toMillis() > deadTime) {
-                                System.out.println("(" + LocalDateTime.now() +
-                                        ") Peer desconectado: " + peer.getAddress().toString());
-                                this.peers.get(peer.getAddress().toString()).deactivate();
-                            }
-                        }
-                    }
-                } finally {
-                    unlock();
-                }
-                try {
-                    Thread.sleep(helloTime);
-                } catch (Exception e) {
-                    System.out.println("killPeers: " + e.getMessage());
-                }
-
-            }
-        }).start();
     }
 
     /**
@@ -229,7 +89,6 @@ public class Network {
     }
 
 
-
     /**
      * Adiciona aos peers conhecidos a lista passada em argumento.
      *
@@ -243,36 +102,7 @@ public class Network {
 
     }
 
-    /**
-     * Função para enviar mensagens para verificar se algum peer se desconectou.
-     */
-    public void sendPings() {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    lock();
-                    List<Peer> peers = new ArrayList<>(this.peers.values());
-                    Message ping = new Message(Variables.PING, null);
-                    for (Peer p : peers) {
-                        try {
-                            sendSimpleMessage(ping, p.getAddress());
-                        } catch (IOException e) {
-                            this.peers.get(p.getAddress().toString()).deactivate();
-                            //System.out.println("Não foi possível enviar o ping para " + p.getAddress() + ".");
-                        }
-                    }
-                } finally {
-                    unlock();
-                }
-                try {
-                    Thread.sleep(Variables.HELLO_TIME);
-                } catch (Exception e) {
-                    System.out.println("sendPings: " + e.getMessage());
-                }
-            }
-        }).start();
 
-    }
 
     public void printConnectedPeers() {
         try {
@@ -359,7 +189,7 @@ public class Network {
             if (key.contains(file)) {
                 try {
                     //Caso tenha registo do ficheiro envia a key correspondente!
-                    sendSimpleMessage(new Message(Variables.QUERY_RESPONSE, key ), requestOrigin);
+                    sendSimpleMessage(new Message(Variables.QUERY_RESPONSE, key), requestOrigin);
                 } catch (IOException e) {
                     System.out.println("Cannot response to " + requestOrigin.toString());
                 }
@@ -410,29 +240,29 @@ public class Network {
         }
     }
 
-    public void sourcePeerFile(String file, InetAddress peer){
-        if (filePeers.containsKey(file)){
-            System.out.println("Add peer as file("+file+"): "+peer.toString());
+    public void sourcePeerFile(String file, InetAddress peer) {
+        if (filePeers.containsKey(file)) {
+            System.out.println("Add peer as file(" + file + "): " + peer.toString());
             filePeers.get(file).add(peers.get(peer.toString()));
         } else {
-            System.out.println("First peer with file("+file+"): "+peer);
+            System.out.println("First peer with file(" + file + "): " + peer);
             List<Peer> filep = new ArrayList<>();
             filep.add(peers.get(peer.toString()));
-            filePeers.put(file,filep);
+            filePeers.put(file, filep);
         }
     }
 
-    public void printFilesKnown(){
+    public void printFilesKnown() {
         try {
             lock();
             List<String> files = new ArrayList<>(filePeers.keySet());
             int i = 1;
             System.out.println("---------------------------------------");
-            for (String file : files){
-                System.out.println("["+file+"]: "+filePeers.get(file).toString());
+            for (String file : files) {
+                System.out.println("[" + file + "]: " + filePeers.get(file).toString());
                 i++;
             }
-            if(i == 1){
+            if (i == 1) {
                 System.out.println("No files.");
             }
             System.out.println("---------------------------------------");
@@ -442,17 +272,22 @@ public class Network {
     }
 
     public void sendRequestFile(String file) throws IOException {
-        Message request = new Message(Variables.REQUEST,file);
+        Message request = new Message(Variables.REQUEST, file);
 
-        for (Peer peer : this.filePeers.get(file)){
-           if (peer.isON()){
-               sendSimpleMessage(request,peer.getAddress());
-               FileTransfer.receive((new File(file)).getName(),peer.getAddress());
-               return;
-           }
+        for (Peer peer : this.filePeers.get(file)) {
+            if (peer.isON()) {
+                sendSimpleMessage(request, peer.getAddress());
+                FileTransfer.receive((new File(file)).getName(), peer.getAddress());
+                return;
+            }
         }
 
         System.out.println("No peers available to download the file!");
+    }
+
+
+    public Map<String, Peer> getPeers() {
+        return peers;
     }
 
     //*************************************************//

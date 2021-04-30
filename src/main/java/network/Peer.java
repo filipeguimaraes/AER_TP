@@ -1,3 +1,5 @@
+package network;
+
 import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,11 +19,17 @@ public class Peer {
         this.status = Variables.ON;
     }
 
+    /**
+     * Marcar como ativo o peer.
+     */
     public void activate() {
         this.status = Variables.ON;
         this.timeStamp = LocalDateTime.now();
     }
 
+    /**
+     * Marcar como ativo o peer.
+     */
     public void deactivate() {
         this.status = Variables.OFF;
     }
@@ -39,6 +47,10 @@ public class Peer {
         return addDate;
     }
 
+    /**
+     * Verifica se está ativo.
+     * @return true caso esteja ativo, falso caso contrário.
+     */
     public boolean isON(){
         return this.status == Variables.ON;
     }

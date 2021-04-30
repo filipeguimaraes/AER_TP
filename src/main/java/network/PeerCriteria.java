@@ -1,3 +1,5 @@
+package network;
+
 public class PeerCriteria {
     String type;
     Object stuff;

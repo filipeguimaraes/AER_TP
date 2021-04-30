@@ -1,3 +1,5 @@
+package network;
+
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ public class Message implements Serializable {
 
     /**
      * Usado caso seja uma mensagem de troca de peers para separar os diferentes peers
-     * na mensagem.
+     * na mensagem. (não usado)
      * @return Lista de peers.
      * @throws Exception Caso este método seja usado num tipo de mensagem inválido.
      */

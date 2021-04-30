@@ -1,3 +1,5 @@
+package network;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.time.LocalDateTime;
@@ -5,6 +7,12 @@ import java.util.List;
 
 public class Multiplexer {
 
+    /**
+     * Método para tratar as mensagens recebidas chamando os métodos respetivos.
+     * @param message Mensagem recebida
+     * @param originAddress Endereço de origem.
+     * @throws IOException Exceção.
+     */
     public static void receive(Message message, InetAddress originAddress) throws IOException {
         Network network = Network.getInstance();
 

@@ -1,3 +1,5 @@
+package network;
+
 public class Variables {
     //Endereços e Portas
     public static final String MULTICAST_ADDRESS = "FF15::1";
