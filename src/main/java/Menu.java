@@ -37,16 +37,16 @@ public class Menu {
                     Network.getInstance().printDisconnectedPeers();
                     break;
                 case "3":
+                    clearScreen();
                     System.out.println("Query: ");
                     Scanner s3 = new Scanner(System.in);
-                    clearScreen();
                     Network.getInstance().sendSearch(s3.nextLine());
                     break;
                 case "4":
+                    clearScreen();
                     Network.getInstance().printFilesKnown();
                     System.out.println("Path: ");
                     Scanner s4 = new Scanner(System.in);
-                    clearScreen();
                     Network.getInstance().sendRequestFile(s4.nextLine());
                     break;
                 default:
