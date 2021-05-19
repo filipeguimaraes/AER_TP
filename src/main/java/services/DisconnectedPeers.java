@@ -41,8 +41,7 @@ public class DisconnectedPeers {
                         if (peer.isON()) {
                             Duration duration = Duration.between(peer.getTimeStamp(), LocalDateTime.now());
                             if (duration.toMillis() > Variables.DEAD_TIME) {
-                                System.out.println("(" + LocalDateTime.now() +
-                                        ") Network.Peer desconectado: " + peer.getAddress().toString());
+                                //System.out.println("(" + LocalDateTime.now() +") Network.Peer desconectado: " + peer.getAddress().toString());
                                 network.getPeers().get(peer.getAddress().toString()).deactivate();
                             }
                         }
