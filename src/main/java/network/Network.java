@@ -52,7 +52,6 @@ public class Network {
             if (!peers.containsKey(peer.getAddress().toString())) {
                 peer.activate();
                 peers.put(peer.getAddress().toString(), peer);
-                System.out.println("(" + LocalDateTime.now() + ") Add peer: " + peer.getAddress().toString());
             } else {
                 peers.get(peer.getAddress().toString()).activate();
             }
@@ -242,10 +241,8 @@ public class Network {
 
     public void sourcePeerFile(String file, InetAddress peer) {
         if (filePeers.containsKey(file)) {
-            System.out.println("Add peer as file(" + file + "): " + peer.toString());
             filePeers.get(file).add(peers.get(peer.toString()));
         } else {
-            System.out.println("First peer with file(" + file + "): " + peer);
             List<Peer> filep = new ArrayList<>();
             filep.add(peers.get(peer.toString()));
             filePeers.put(file, filep);

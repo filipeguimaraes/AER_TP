@@ -52,8 +52,8 @@ public class DisconnectedPeers {
                 }
                 try {
                     Thread.sleep(Variables.HELLO_TIME);
-                } catch (Exception e) {
-                    System.out.println("killPeers: " + e.getMessage());
+                } catch (Exception ignored) {
+                    System.out.println("Something went wrong!");
                 }
 
             }

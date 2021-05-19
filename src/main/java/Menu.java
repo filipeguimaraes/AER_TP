@@ -29,23 +29,28 @@ public class Menu {
             Scanner sc = new Scanner(System.in);
             switch (sc.nextLine()) {
                 case "1":
+                    clearScreen();
                     Network.getInstance().printConnectedPeers();
                     break;
                 case "2":
+                    clearScreen();
                     Network.getInstance().printDisconnectedPeers();
                     break;
                 case "3":
                     System.out.println("Query: ");
                     Scanner s3 = new Scanner(System.in);
+                    clearScreen();
                     Network.getInstance().sendSearch(s3.nextLine());
                     break;
                 case "4":
                     Network.getInstance().printFilesKnown();
                     System.out.println("Path: ");
                     Scanner s4 = new Scanner(System.in);
+                    clearScreen();
                     Network.getInstance().sendRequestFile(s4.nextLine());
                     break;
                 default:
+                    clearScreen();
                     System.out.println("Invalid option!");
                     break;
             }
