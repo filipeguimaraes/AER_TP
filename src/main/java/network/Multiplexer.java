@@ -28,6 +28,9 @@ public class Multiplexer {
             case Variables.QUERY_RESPONSE:
                 network.sourcePeerFile(message.getMessage(), originAddress);
             case Variables.PING:
+                if (!originAddress.toString().contains("127.0.0.1")) {
+                    network.addPeer(new Peer(originAddress, LocalDateTime.now()));
+                }
                 Message hello = new Message(Variables.HELLO, null);
                 network.sendSimpleMessage(hello, originAddress);
                 break;
