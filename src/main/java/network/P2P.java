@@ -4,16 +4,19 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import services.FileTransfer;
 
 import java.io.*;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Network {
-    private static Network instance = null;
+public class P2P {
+    private static P2P instance = null;
     private final ReentrantLock lock = new ReentrantLock();
     private int helloTime = Variables.HELLO_TIME;
     private int deadTime = Variables.DEAD_TIME;
@@ -23,7 +26,7 @@ public class Network {
     private Map<String, List<Peer>> filePeers;
 
 
-    private Network() {
+    private P2P() {
         this.peers = new TreeMap<>();
         this.files = new HashMap<>();
         this.filePeers = new HashMap<>();
@@ -34,9 +37,9 @@ public class Network {
      *
      * @return Instância única da rede.
      */
-    public static Network getInstance() {
+    public static P2P getInstance() {
         if (instance == null) {
-            instance = new Network();
+            instance = new P2P();
         }
         return instance;
     }
@@ -44,7 +47,7 @@ public class Network {
     /**
      * Adiciona um peer á lista de peers atualizando o timestamp.
      *
-     * @param peer Network.Peer a ser adicionado.
+     * @param peer P2P.Peer a ser adicionado.
      */
     public void addPeer(Peer peer) {
         try {
@@ -100,7 +103,6 @@ public class Network {
         }
 
     }
-
 
 
     public void printConnectedPeers() {
@@ -239,6 +241,11 @@ public class Network {
         }
     }
 
+    /**
+     * Cria uma associação ao ficheiro pedido ao peer que enviou a mensagem.
+     * @param file Ficheiro solicitado.
+     * @param peer Peer que enviou a mensagem.
+     */
     public void sourcePeerFile(String file, InetAddress peer) {
         if (filePeers.containsKey(file)) {
             filePeers.get(file).add(peers.get(peer.toString()));
@@ -249,6 +256,9 @@ public class Network {
         }
     }
 
+    /**
+     * Imprime no ecrã os ficheiros que ele sabe que existem e os respetivos nós que os têm.
+     */
     public void printFilesKnown() {
         try {
             lock();
@@ -268,6 +278,11 @@ public class Network {
         }
     }
 
+    /**
+     * Enviar aos nós que conhece que sabe que têm o ficheiro e estão ligados uma solicitação de um novo ficheiro
+     * @param file Nome do ficheiro pretendido.
+     * @throws IOException Caso não consiga enviar a mensagem.
+     */
     public void sendRequestFile(String file) throws IOException {
         Message request = new Message(Variables.REQUEST, file);
 
@@ -282,7 +297,11 @@ public class Network {
         System.out.println("No peers available to download the file!");
     }
 
-
+    /**
+     * Retorna a lista de peers no momento. (Not Thread safe)
+     *
+     * @return Lista de peers
+     */
     public Map<String, Peer> getPeers() {
         return peers;
     }

@@ -1,6 +1,7 @@
 package services;
 
-import network.*;
+import network.Message;
+import network.Variables;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
@@ -11,15 +12,15 @@ import java.util.List;
 
 public class MulticastSearch {
 
-    private boolean flag;
     private static MulticastSearch instance = null;
+    private boolean flag;
 
     private MulticastSearch() {
         this.flag = true;
     }
 
-    public static MulticastSearch getInstance(){
-        if (instance == null){
+    public static MulticastSearch getInstance() {
+        if (instance == null) {
             instance = new MulticastSearch();
         }
         return instance;
@@ -98,16 +99,16 @@ public class MulticastSearch {
         return result;
     }
 
-    public void init(){
+    public void init() {
         this.flag = true;
         obtainPeersOnMulticast();
     }
 
-    public void stop(){
+    public void stop() {
         this.flag = false;
     }
 
-    public String getState(){
+    public String getState() {
         return this.flag ? "ON" : "OFF";
     }
 

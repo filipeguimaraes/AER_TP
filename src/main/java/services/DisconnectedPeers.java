@@ -1,12 +1,11 @@
 package services;
 
-import network.Network;
+import network.P2P;
 import network.Peer;
 import network.Variables;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ValueRange;
 import java.util.ArrayList;
 
 public class DisconnectedPeers {
@@ -30,24 +29,24 @@ public class DisconnectedPeers {
      * com um timestamp mais antigo do que o predefinido.
      */
     public void killPeers() {
-        Network network = Network.getInstance();
+        P2P p2P = P2P.getInstance();
 
         new Thread(() -> {
             while (flag) {
                 try {
-                    network.lock();
-                    ArrayList<Peer> peers = new ArrayList<>(network.getPeers().values());
+                    p2P.lock();
+                    ArrayList<Peer> peers = new ArrayList<>(p2P.getPeers().values());
                     for (Peer peer : peers) {
                         if (peer.isON()) {
                             Duration duration = Duration.between(peer.getTimeStamp(), LocalDateTime.now());
                             if (duration.toMillis() > Variables.DEAD_TIME) {
-                                //System.out.println("(" + LocalDateTime.now() +") Network.Peer desconectado: " + peer.getAddress().toString());
-                                network.getPeers().get(peer.getAddress().toString()).deactivate();
+                                //System.out.println("(" + LocalDateTime.now() +") P2P.Peer desconectado: " + peer.getAddress().toString());
+                                p2P.getPeers().get(peer.getAddress().toString()).deactivate();
                             }
                         }
                     }
                 } finally {
-                    network.unlock();
+                    p2P.unlock();
                 }
                 try {
                     Thread.sleep(Variables.HELLO_TIME);

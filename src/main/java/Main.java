@@ -1,4 +1,4 @@
-import network.Network;
+import network.P2P;
 import services.*;
 import org.json.simple.parser.ParseException;
 
@@ -13,7 +13,7 @@ public class Main {
      * @throws ParseException Caminho para o ficheiro incorreto
      */
     public static void main(String[] args) throws IOException, ParseException {
-        Network p2p = Network.getInstance();
+        P2P p2p = P2P.getInstance();
 
         if(args.length==1){
             p2p.loadPeersFromConfig(args[0]);

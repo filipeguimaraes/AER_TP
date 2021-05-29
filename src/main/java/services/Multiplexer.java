@@ -1,4 +1,10 @@
-package network;
+package services;
+
+import network.Message;
+import network.P2P;
+import network.Peer;
+import network.Variables;
+import services.FileTransfer;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -14,25 +20,25 @@ public class Multiplexer {
      * @throws IOException Exceção.
      */
     public static void receive(Message message, InetAddress originAddress) throws IOException {
-        Network network = Network.getInstance();
+        P2P p2P = P2P.getInstance();
 
         switch (message.getType()) {
             case Variables.HELLO:
                 if (!originAddress.toString().contains("127.0.0.1")) {
-                    network.addPeer(new Peer(originAddress, LocalDateTime.now()));
+                    p2P.addPeer(new Peer(originAddress, LocalDateTime.now()));
                 }
                 break;
             case Variables.QUERY:
-                network.searchFile(message.getMessage(), originAddress);
+                p2P.searchFile(message.getMessage(), originAddress);
                 break;
             case Variables.QUERY_RESPONSE:
-                network.sourcePeerFile(message.getMessage(), originAddress);
+                p2P.sourcePeerFile(message.getMessage(), originAddress);
             case Variables.PING:
                 if (!originAddress.toString().contains("127.0.0.1")) {
-                    network.addPeer(new Peer(originAddress, LocalDateTime.now()));
+                    p2P.addPeer(new Peer(originAddress, LocalDateTime.now()));
                 }
                 Message hello = new Message(Variables.HELLO, null);
-                network.sendSimpleMessage(hello, originAddress);
+                p2P.sendSimpleMessage(hello, originAddress);
                 break;
             case Variables.PEERS:
                 System.out.println("Recebi peers");
@@ -42,7 +48,7 @@ public class Multiplexer {
                 } catch (Exception e) {
                     System.out.println("receive: " + e.getMessage());
                 }
-                network.addPeers(peers);
+                p2P.addPeers(peers);
                 break;
             case Variables.REQUEST:
                 FileTransfer.send(message.getMessage());

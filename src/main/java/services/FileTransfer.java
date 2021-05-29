@@ -1,4 +1,4 @@
-package network;
+package services;
 
 import java.io.*;
 import java.net.InetAddress;

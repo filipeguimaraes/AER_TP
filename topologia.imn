@@ -1,7 +1,7 @@
 node n2 {
     type router
     model mdr
-    network-config {
+    p2P-config {
 	hostname n2
 	!
 	interface eth0
@@ -19,7 +19,7 @@ node n2 {
 node n3 {
     type router
     model mdr
-    network-config {
+    p2P-config {
 	hostname n3
 	!
 	interface eth0
@@ -37,7 +37,7 @@ node n3 {
 node n4 {
     type router
     model mdr
-    network-config {
+    p2P-config {
 	hostname n4
 	!
 	interface eth0
@@ -55,7 +55,7 @@ node n4 {
 node n5 {
     type router
     model mdr
-    network-config {
+    p2P-config {
 	hostname n5
 	!
 	interface eth0
@@ -73,7 +73,7 @@ node n5 {
 node n6 {
     type router
     model mdr
-    network-config {
+    p2P-config {
 	hostname n6
 	!
 	interface eth0
@@ -90,7 +90,7 @@ node n6 {
 
 node n1 {
     type wlan
-    network-config {
+    p2P-config {
 	hostname wlan1
 	!
 	interface wireless

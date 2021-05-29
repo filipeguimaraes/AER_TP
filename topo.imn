@@ -1,7 +1,7 @@
 node n1 {
     type router
     model mdr
-    network-config {
+    p2P-config {
 	hostname n1
 	!
 	interface eth0
@@ -30,7 +30,7 @@ node n1 {
 	  ipv6 ospf6 hello-interval 2
 	  ipv6 ospf6 dead-interval 6
 	  ipv6 ospf6 retransmit-interval 5
-	  ipv6 ospf6 network manet-designated-router
+	  ipv6 ospf6 p2P manet-designated-router
 	  ipv6 ospf6 twohoprefresh 3
 	  ipv6 ospf6 adjacencyconnectivity uniconnected
 	  ipv6 ospf6 lsafullness mincostlsa
@@ -48,7 +48,7 @@ node n1 {
 
 node n6 {
     type wlan
-    network-config {
+    p2P-config {
 	hostname wlan6
 	!
 	interface wireless
@@ -84,7 +84,7 @@ node n6 {
 node n2 {
     type router
     model mdr
-    network-config {
+    p2P-config {
 	hostname n2
 	!
 	interface eth0
@@ -113,7 +113,7 @@ node n2 {
 	  ipv6 ospf6 hello-interval 2
 	  ipv6 ospf6 dead-interval 6
 	  ipv6 ospf6 retransmit-interval 5
-	  ipv6 ospf6 network manet-designated-router
+	  ipv6 ospf6 p2P manet-designated-router
 	  ipv6 ospf6 twohoprefresh 3
 	  ipv6 ospf6 adjacencyconnectivity uniconnected
 	  ipv6 ospf6 lsafullness mincostlsa
@@ -132,7 +132,7 @@ node n2 {
 node n3 {
     type router
     model mdr
-    network-config {
+    p2P-config {
 	hostname n3
 	!
 	interface eth0
@@ -161,7 +161,7 @@ node n3 {
 	  ipv6 ospf6 hello-interval 2
 	  ipv6 ospf6 dead-interval 6
 	  ipv6 ospf6 retransmit-interval 5
-	  ipv6 ospf6 network manet-designated-router
+	  ipv6 ospf6 p2P manet-designated-router
 	  ipv6 ospf6 twohoprefresh 3
 	  ipv6 ospf6 adjacencyconnectivity uniconnected
 	  ipv6 ospf6 lsafullness mincostlsa
@@ -180,7 +180,7 @@ node n3 {
 node n4 {
     type router
     model mdr
-    network-config {
+    p2P-config {
 	hostname n4
 	!
 	interface eth0
@@ -209,7 +209,7 @@ node n4 {
 	  ipv6 ospf6 hello-interval 2
 	  ipv6 ospf6 dead-interval 6
 	  ipv6 ospf6 retransmit-interval 5
-	  ipv6 ospf6 network manet-designated-router
+	  ipv6 ospf6 p2P manet-designated-router
 	  ipv6 ospf6 twohoprefresh 3
 	  ipv6 ospf6 adjacencyconnectivity uniconnected
 	  ipv6 ospf6 lsafullness mincostlsa
@@ -228,7 +228,7 @@ node n4 {
 node n5 {
     type router
     model mdr
-    network-config {
+    p2P-config {
 	hostname n5
 	!
 	interface eth0
@@ -257,7 +257,7 @@ node n5 {
 	  ipv6 ospf6 hello-interval 2
 	  ipv6 ospf6 dead-interval 6
 	  ipv6 ospf6 retransmit-interval 5
-	  ipv6 ospf6 network manet-designated-router
+	  ipv6 ospf6 p2P manet-designated-router
 	  ipv6 ospf6 twohoprefresh 3
 	  ipv6 ospf6 adjacencyconnectivity uniconnected
 	  ipv6 ospf6 lsafullness mincostlsa
