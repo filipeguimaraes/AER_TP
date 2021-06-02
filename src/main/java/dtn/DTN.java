@@ -99,8 +99,16 @@ public class DTN {
                     Constants.POST,
                     cache.getFiles().get(message.getFile().getName()));
 
-            sendPost(response);
+            System.out.println("Waiting 3 seconds for testing dtn!");
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                System.out.println("Can't sleep anymore!");
+            }
+
             System.out.println("I have the file!");
+            postPendent.put(message.getId(),message);
+            sendPost(response);
         } else {
             if (!interestsSent.contains(message.getId())) {
                 if (message.getTtl() > 0) {
@@ -145,6 +153,7 @@ public class DTN {
             }
         }
         if (message.getPath().size() > 1) {
+            postPendent.put(message.getId(),message);
             sendPost(message);
         }
     }
@@ -159,6 +168,11 @@ public class DTN {
                     }
                 } finally {
                     lock.unlock();
+                }
+                try {
+                    Thread.sleep(4000);
+                } catch (InterruptedException e) {
+                    System.out.println("Can't sleep anymore!");
                 }
             }
         }).start();

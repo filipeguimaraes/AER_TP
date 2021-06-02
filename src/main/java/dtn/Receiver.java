@@ -2,6 +2,7 @@ package dtn;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -45,6 +46,11 @@ public class Receiver {
                 break;
             case Constants.POST:
                 Message confirm = new Message(message.getId(),null,0,Constants.CONFIRM,null);
+                try {
+                    confirm.send(originAddress);
+                } catch (IOException e) {
+                    System.out.println("Cannot confirm post!");
+                }
                 message.getPath().remove(message.getPath().size()-1);
                 dtn.receivePost(message);
                 break;
