@@ -40,6 +40,7 @@ public class DTN {
 
     public void sendInterest(String fileName, List<InetAddress> destination) {
         String messageID = this.name + fileName + LocalDateTime.now();
+        interestsSent.add(messageID);
         FileNDN file = new FileNDN(fileName, new byte[0]);
         for (InetAddress dest : destination) {
             try {
@@ -58,6 +59,7 @@ public class DTN {
     }
 
     public void sendInterest(Message message) {
+        interestsSent.add(message.getId());
         if (message.getTtl() > 0) {
             List<InetAddress> destination = new ArrayList<>();
             try {
@@ -87,22 +89,23 @@ public class DTN {
 
 
     public void receiveInterest(Message message) {
-        if (cache.containsFile(message.getFile())) {
-            InetAddress dest = message.getPath().get(message.getPath().size() - 1);
-            List<InetAddress> path = message.getPath();
-            path.remove(message.getPath().size() - 1);
+        if (!interestsSent.contains(message.getId())) {
+            if (cache.containsFile(message.getFile())) {
+                InetAddress dest = message.getPath().get(message.getPath().size() - 1);
+                List<InetAddress> path = message.getPath();
+                path.remove(message.getPath().size() - 1);
 
-            Message response = new Message(message.getId(),
-                    path,
-                    0,
-                    Constants.POST,
-                    cache.getFiles().get(message.getFile().getName()));
+                Message response = new Message(message.getId(),
+                        path,
+                        0,
+                        Constants.POST,
+                        cache.getFiles().get(message.getFile().getName()));
 
-            sendPost(response);
-        } else {
-            System.out.println("Recebi um pedido! ttl =" + message.getTtl());
-            sendInterest(message);
-            //TODO
+                sendPost(response);
+            } else {
+                System.out.println("Recebi um pedido! ttl =" + message.getTtl());
+                sendInterest(message);
+            }
         }
     }
 
