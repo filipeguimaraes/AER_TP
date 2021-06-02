@@ -6,13 +6,16 @@ import p2p.P2P;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DTN {
     private static DTN instance = null;
     private final Cache cache;
     private final String name;
-    private final Map<String,Message> postPendent = new HashMap<>(); //messageID
+    private final Map<String, Message> postPendent = new HashMap<>(); //messageID
     private final List<String> interestsSent = new ArrayList<>();
 
     private DTN(String name) {
@@ -48,7 +51,7 @@ public class DTN {
                         file);
                 interest.send(dest);
 
-                System.out.println("Enviei um pedido para: "+dest.getHostAddress());
+                System.out.println("Enviei um pedido para: " + dest.getHostAddress());
             } catch (IOException e) {
                 System.out.println("Can't send NDN interest to " + dest + "! more info: ");
                 e.printStackTrace();
@@ -73,7 +76,7 @@ public class DTN {
         for (InetAddress dest : destination) {
             try {
                 message.send(dest);
-                System.out.println("Reencaminhei um pedido para: "+dest.getHostAddress());
+                System.out.println("Reencaminhei um pedido para: " + dest.getHostAddress());
             } catch (IOException e) {
                 System.out.println("Can't send NDN interest to " + dest + "! more info: ");
                 e.printStackTrace();
@@ -84,27 +87,28 @@ public class DTN {
 
 
     public void receiveInterest(Message message) {
-        if (!interestsSent.contains(message.getId())) {
-            if (cache.containsFile(message.getFile())) {
-                List<InetAddress> path = message.getPath();
-                Message response = new Message(message.getId(),
-                        path,
-                        0,
-                        Constants.POST,
-                        cache.getFiles().get(message.getFile().getName()));
+        System.out.println("Receive a interest!");
+        if (cache.containsFile(message.getFile())) {
+            List<InetAddress> path = message.getPath();
+            Message response = new Message(message.getId(),
+                    path,
+                    0,
+                    Constants.POST,
+                    cache.getFiles().get(message.getFile().getName()));
 
-                sendPost(response);
-                System.out.println("Receive a interest!");
-            } else {
+            sendPost(response);
+            System.out.println("I have the file!");
+        } else {
+            if (!interestsSent.contains(message.getId())) {
                 if (message.getTtl() > 0) {
                     sendInterest(message);
                 } else System.out.println("TTL is 0.");
-
             }
         }
+
     }
 
-    public void confirmPost(String messageID){
+    public void confirmPost(String messageID) {
         postPendent.remove(messageID);
     }
 
@@ -112,7 +116,7 @@ public class DTN {
     public void sendPost(Message message) {
         try {
             System.out.println("Send a post!");
-            message.send(message.getPath().get(message.getPath().size()-1));
+            message.send(message.getPath().get(message.getPath().size() - 1));
         } catch (IOException e) {
             System.out.println("Cannot send Post! Retrying later.");
         }
@@ -131,7 +135,7 @@ public class DTN {
                 System.out.println("Error downloading file!");
             }
         }
-        if (message.getPath().size() > 1){
+        if (message.getPath().size() > 1) {
             sendPost(message);
         }
     }
