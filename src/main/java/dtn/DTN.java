@@ -124,10 +124,10 @@ public class DTN {
 
     public void receivePost(Message message) {
         System.out.println("Receive a post! "+ message.getPath());
-        if (message.getPath().size() == 2) { //Caso seja o ultimo salto fica também em cache
+        if (message.getPath().size() == 1) { //Caso seja o ultimo salto fica também em cache
             cache.addFile(message.getFile());
         }
-        if (message.getPath().size() == 1) {
+        if (message.getPath().size() == 0) {
             cache.addFile(message.getFile());
             try {
                 message.getFile().savefile();
