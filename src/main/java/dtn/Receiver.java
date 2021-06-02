@@ -17,7 +17,7 @@ public class Receiver {
                 ms.joinGroup(group);
 
                 while (true) {
-                    byte[] buffer = new byte[8192];
+                    byte[] buffer = new byte[Constants.MAX_SIZE];
                     DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
                     ms.receive(dp);
 
