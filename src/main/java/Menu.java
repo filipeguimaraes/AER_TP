@@ -1,4 +1,4 @@
-import network.P2P;
+import p2p.P2P;
 
 import java.io.IOException;
 import java.util.Scanner;

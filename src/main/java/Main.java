@@ -1,7 +1,9 @@
-import network.P2P;
+import dtn.DTN;
+import p2p.P2P;
 import services.*;
 import org.json.simple.parser.ParseException;
 
+import java.io.File;
 import java.io.IOException;
 
 public class Main {
@@ -16,17 +18,23 @@ public class Main {
         P2P p2p = P2P.getInstance();
 
         if(args.length==1){
+            File file = new File(args[0]);
+            DTN.getInstance(file.getName().split("/.")[0]);
             p2p.loadPeersFromConfig(args[0]);
             p2p.loadFilesFromConfig(args[0]);
+
+            //Inicialização dos serviços
+            Receiver.getInstance().init();
+            MulticastSearch.getInstance().init();
+            DisconnectedPeers.getInstance().init();
+            PingPeers.getInstance().init();
+
+            Menu.menu();
+        }else {
+            System.out.println("Ficheiro de configuração não especificado.");
         }
 
-        //Inicialização dos serviços
-        Receiver.getInstance().init();
-        MulticastSearch.getInstance().init();
-        DisconnectedPeers.getInstance().init();
-        PingPeers.getInstance().init();
 
-        Menu.menu();
 
     }
 

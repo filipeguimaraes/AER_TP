@@ -1,9 +1,9 @@
 package services;
 
-import network.Message;
-import network.P2P;
-import network.Peer;
-import network.Variables;
+import p2p.Message;
+import p2p.P2P;
+import p2p.Peer;
+import p2p.Constantes;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class PingPeers {
                 try {
                     p2P.lock();
                     List<Peer> peers = new ArrayList<>(p2P.getPeers().values());
-                    Message ping = new Message(Variables.PING, null);
+                    Message ping = new Message(Constantes.PING, null);
                     for (Peer p : peers) {
                         try {
                             p2P.sendSimpleMessage(ping, p.getAddress());
@@ -50,7 +50,7 @@ public class PingPeers {
                     p2P.unlock();
                 }
                 try {
-                    Thread.sleep(Variables.HELLO_TIME);
+                    Thread.sleep(Constantes.HELLO_TIME);
                 } catch (Exception e) {
                     System.out.println("sendPings: " + e.getMessage());
                 }

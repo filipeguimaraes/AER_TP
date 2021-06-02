@@ -1,7 +1,7 @@
 package services;
 
-import network.Message;
-import network.Variables;
+import p2p.Message;
+import p2p.Constantes;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
@@ -34,9 +34,9 @@ public class MulticastSearch {
         new Thread(() -> {
             while (true) {
                 try {
-                    List<InetAddress> addrs = obtainValidAddresses(InetAddress.getByName(Variables.MULTICAST_ADDRESS));
+                    List<InetAddress> addrs = obtainValidAddresses(InetAddress.getByName(Constantes.MULTICAST_ADDRESS));
 
-                    Message hello = new Message(Variables.HELLO, null);
+                    Message hello = new Message(Constantes.HELLO, null);
                     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     final ObjectOutputStream oos = new ObjectOutputStream(baos);
                     oos.writeObject(hello);
@@ -46,8 +46,8 @@ public class MulticastSearch {
                     DatagramPacket dp = new DatagramPacket(
                             data,
                             data.length,
-                            InetAddress.getByName(Variables.MULTICAST_ADDRESS),
-                            Variables.MULTICAST_PORT);
+                            InetAddress.getByName(Constantes.MULTICAST_ADDRESS),
+                            Constantes.MULTICAST_PORT);
 
                     for (InetAddress addr : addrs) {
                         ms.setInterface(addr);
@@ -55,7 +55,7 @@ public class MulticastSearch {
 
                     }
                     ms.close();
-                    Thread.sleep(Variables.HELLO_TIME);
+                    Thread.sleep(Constantes.HELLO_TIME);
                 } catch (Exception e) {
                     System.out.println("obtainPeersOnMulticast: " + e.getMessage());
                 }

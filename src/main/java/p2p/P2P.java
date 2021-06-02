@@ -1,10 +1,10 @@
-package network;
+package p2p;
 
+import dtn.DTN;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import services.FileTransfer;
 
 import java.io.*;
 import java.net.DatagramPacket;
@@ -12,24 +12,25 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class P2P {
     private static P2P instance = null;
     private final ReentrantLock lock = new ReentrantLock();
-    private int helloTime = Variables.HELLO_TIME;
-    private int deadTime = Variables.DEAD_TIME;
+    private int helloTime = Constantes.HELLO_TIME;
+    private int deadTime = Constantes.DEAD_TIME;
     private Map<String, Peer> peers;
-    private Map<String, File> files;
 
-    private Map<String, List<Peer>> filePeers;
+    //private Map<String, List<Peer>> filePeers;
 
 
     private P2P() {
         this.peers = new TreeMap<>();
-        this.files = new HashMap<>();
-        this.filePeers = new HashMap<>();
+        //this.filePeers = new HashMap<>();
     }
 
     /**
@@ -84,7 +85,7 @@ public class P2P {
                 data,
                 data.length,
                 address,
-                Variables.MULTICAST_PORT);
+                Constantes.MULTICAST_PORT);
         ds.send(dp);
 
         ds.close();
@@ -163,42 +164,57 @@ public class P2P {
         }
     }
 
-    public void sendSearch(String query) {
-        System.out.println("Searching for " + query + "...");
-        Message search = new Message(Variables.QUERY, query);
-        try {
-            lock();
-            List<Peer> peers = new ArrayList<>(this.peers.values());
-            for (Peer p : peers) {
-                if (p.isON()) {
-                    try {
-                        sendSimpleMessage(search, p.getAddress());
-                    } catch (IOException e) {
-                        System.out.println("Cannot send query to " + p.getAddress());
-                    }
-                }
+    public void sendSearch(String fileName) {
+        List<InetAddress> peersConhecidos = new ArrayList<>();
+        for (String ip : peers.keySet()) {
+            if (peers.get(ip).isON()) {
+                peersConhecidos.add(peers.get(ip).getAddress());
             }
-        } finally {
-            unlock();
         }
+        DTN.getInstance().sendInterest(fileName, peersConhecidos);
+
+        /**
+         System.out.println("Searching for " + query + "...");
+         Message search = new Message(Constantes.QUERY, query);
+         try {
+         lock();
+         List<Peer> peers = new ArrayList<>(this.peers.values());
+         for (Peer p : peers) {
+         if (p.isON()) {
+         try {
+         sendSimpleMessage(search, p.getAddress());
+         } catch (IOException e) {
+         System.out.println("Cannot send query to " + p.getAddress());
+         }
+         }
+         }
+         } finally {
+         unlock();
+         }
+         */
     }
 
+
+        /**
     public void searchFile(String file, InetAddress requestOrigin) {
-        System.out.println("Recebi " + file);
-        List<String> keys = new ArrayList<>(this.files.keySet());
-        for (String key : keys) {
-            if (key.contains(file)) {
-                try {
-                    //Caso tenha registo do ficheiro envia a key correspondente!
-                    sendSimpleMessage(new Message(Variables.QUERY_RESPONSE, key), requestOrigin);
-                } catch (IOException e) {
-                    System.out.println("Cannot response to " + requestOrigin.toString());
-                }
-                break;
-            }
-        }
+
+         System.out.println("Recebi " + file);
+         List<String> keys = new ArrayList<>(this.files.keySet());
+         for (String key : keys) {
+         if (key.contains(file)) {
+         try {
+         //Caso tenha registo do ficheiro envia a key correspondente!
+         sendSimpleMessage(new Message(Constantes.QUERY_RESPONSE, key), requestOrigin);
+         } catch (IOException e) {
+         System.out.println("Cannot response to " + requestOrigin.toString());
+         }
+         break;
+         }
+         }
+
 
     }
+    */
 
     /**
      * Carrega peers manualmente especificados no ficheiro de configuração.
@@ -215,7 +231,7 @@ public class P2P {
         for (String s : (Iterable<String>) jsonArray) {
             try {
                 Peer newPeer = new Peer(InetAddress.getByName(s), LocalDateTime.now());
-                Message hello = new Message(Variables.HELLO, null);
+                Message hello = new Message(Constantes.HELLO, null);
                 sendSimpleMessage(hello, newPeer.getAddress());
                 addPeer(newPeer);
             } catch (IOException e) {
@@ -236,65 +252,80 @@ public class P2P {
         JSONObject jsonObject = (JSONObject) parser.parse(new FileReader(path));
         JSONArray jsonArray = (JSONArray) jsonObject.get("files");
 
+        List<File> files = new ArrayList<>();
         for (String s : (Iterable<String>) jsonArray) {
-            files.put(s, null);
+            File file = new File(s);
+            files.add(file);
         }
+
+        DTN.getInstance().getCache().addFiles(files);
     }
 
     /**
      * Cria uma associação ao ficheiro pedido ao peer que enviou a mensagem.
+     *
      * @param file Ficheiro solicitado.
      * @param peer Peer que enviou a mensagem.
      */
     public void sourcePeerFile(String file, InetAddress peer) {
-        if (filePeers.containsKey(file)) {
-            filePeers.get(file).add(peers.get(peer.toString()));
-        } else {
-            List<Peer> filep = new ArrayList<>();
-            filep.add(peers.get(peer.toString()));
-            filePeers.put(file, filep);
-        }
+        /**
+         if (filePeers.containsKey(file)) {
+         filePeers.get(file).add(peers.get(peer.toString()));
+         } else {
+         List<Peer> filep = new ArrayList<>();
+         filep.add(peers.get(peer.toString()));
+         filePeers.put(file, filep);
+         }
+         */
+        //TODO
     }
 
     /**
      * Imprime no ecrã os ficheiros que ele sabe que existem e os respetivos nós que os têm.
      */
     public void printFilesKnown() {
-        try {
-            lock();
-            List<String> files = new ArrayList<>(filePeers.keySet());
-            int i = 1;
-            System.out.println("---------------------------------------");
-            for (String file : files) {
-                System.out.println("[" + file + "]: " + filePeers.get(file).toString());
-                i++;
-            }
-            if (i == 1) {
-                System.out.println("No files.");
-            }
-            System.out.println("---------------------------------------");
-        } finally {
-            unlock();
-        }
+        /**
+         try {
+         lock();
+         List<String> files = new ArrayList<>(filePeers.keySet());
+         int i = 1;
+         System.out.println("---------------------------------------");
+         for (String file : files) {
+         System.out.println("[" + file + "]: " + filePeers.get(file).toString());
+         i++;
+         }
+         if (i == 1) {
+         System.out.println("No files.");
+         }
+         System.out.println("---------------------------------------");
+         } finally {
+         unlock();
+         }
+         */
+        //TODO
     }
 
     /**
      * Enviar aos nós que conhece que sabe que têm o ficheiro e estão ligados uma solicitação de um novo ficheiro
+     *
      * @param file Nome do ficheiro pretendido.
      * @throws IOException Caso não consiga enviar a mensagem.
      */
     public void sendRequestFile(String file) throws IOException {
-        Message request = new Message(Variables.REQUEST, file);
+        /**
+         Message request = new Message(Constantes.REQUEST, file);
 
-        for (Peer peer : this.filePeers.get(file)) {
-            if (peer.isON()) {
-                sendSimpleMessage(request, peer.getAddress());
-                FileTransfer.receive((new File(file)).getName(), peer.getAddress());
-                return;
-            }
-        }
+         for (Peer peer : this.filePeers.get(file)) {
+         if (peer.isON()) {
+         sendSimpleMessage(request, peer.getAddress());
+         FileTransfer.receive((new File(file)).getName(), peer.getAddress());
+         return;
+         }
+         }
 
-        System.out.println("No peers available to download the file!");
+         System.out.println("No peers available to download the file!");
+         */
+        //TODO
     }
 
     /**

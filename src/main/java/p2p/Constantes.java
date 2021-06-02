@@ -1,6 +1,6 @@
-package network;
+package p2p;
 
-public class Variables {
+public class Constantes {
     //Endereços e Portas
     public static final String MULTICAST_ADDRESS = "FF15::1";
     public static final int MULTICAST_PORT = 9999;

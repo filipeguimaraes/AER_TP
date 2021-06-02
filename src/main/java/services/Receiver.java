@@ -1,7 +1,7 @@
 package services;
 
-import network.Message;
-import network.Variables;
+import p2p.Message;
+import p2p.Constantes;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -31,8 +31,8 @@ public class Receiver {
     public void receiveMulticast() {
         new Thread(() -> {
             try {
-                InetAddress group = InetAddress.getByName(Variables.MULTICAST_ADDRESS);
-                MulticastSocket ms = new MulticastSocket(Variables.MULTICAST_PORT);
+                InetAddress group = InetAddress.getByName(Constantes.MULTICAST_ADDRESS);
+                MulticastSocket ms = new MulticastSocket(Constantes.MULTICAST_PORT);
                 ms.joinGroup(group);
 
 

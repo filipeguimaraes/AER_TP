@@ -1,4 +1,4 @@
-package network;
+package p2p;
 
 public class PeerCriteria {
     String type;

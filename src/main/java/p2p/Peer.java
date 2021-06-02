@@ -1,4 +1,4 @@
-package network;
+package p2p;
 
 import java.net.InetAddress;
 import java.time.LocalDateTime;
@@ -16,14 +16,14 @@ public class Peer {
         this.address = address;
         this.addDate = addDate;
         this.timeStamp = LocalDateTime.now();
-        this.status = Variables.ON;
+        this.status = Constantes.ON;
     }
 
     /**
      * Marcar como ativo o peer.
      */
     public void activate() {
-        this.status = Variables.ON;
+        this.status = Constantes.ON;
         this.timeStamp = LocalDateTime.now();
     }
 
@@ -31,7 +31,7 @@ public class Peer {
      * Marcar como ativo o peer.
      */
     public void deactivate() {
-        this.status = Variables.OFF;
+        this.status = Constantes.OFF;
     }
 
 
@@ -52,12 +52,12 @@ public class Peer {
      * @return true caso esteja ativo, falso caso contrário.
      */
     public boolean isON(){
-        return this.status == Variables.ON;
+        return this.status == Constantes.ON;
     }
 
     @Override
     public String toString() {
-        String status = this.status == Variables.ON ? "ON" : "OFF";
+        String status = this.status == Constantes.ON ? "ON" : "OFF";
         return "{" +
                 "address: " + address +
                 ", status: " + status  +
