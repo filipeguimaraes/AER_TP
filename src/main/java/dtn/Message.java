@@ -3,12 +3,13 @@ package dtn;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.List;
 
-public class Message {
+public class Message implements Serializable {
     private String id;
     private List<InetAddress> path; //o primeiro é a origem
     private int ttl = Constants.TTL;

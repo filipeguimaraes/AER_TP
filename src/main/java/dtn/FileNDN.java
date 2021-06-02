@@ -1,6 +1,8 @@
 package dtn;
 
-public class FileNDN {
+import java.io.Serializable;
+
+public class FileNDN implements Serializable {
     private String name;
     private byte[] dados;
 
