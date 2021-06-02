@@ -128,7 +128,8 @@ public class DTN {
             } catch (IOException e) {
                 System.out.println("Error downloading file!");
             }
-        }else {
+        }
+        if (message.getPath().size() > 1){
             sendPost(message);
         }
     }
