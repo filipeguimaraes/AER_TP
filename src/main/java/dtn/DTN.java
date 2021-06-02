@@ -45,7 +45,7 @@ public class DTN {
                 System.out.println("Enviei um pedido!");
                 interest.send(dest);
             } catch (IOException e) {
-                System.out.println("Can't send NDN interest to " + dest + "!");
+                System.out.println("Can't send NDN interest to " + dest + "! more info: "+e.getMessage());
             }
         }
     }
