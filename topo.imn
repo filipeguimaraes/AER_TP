@@ -10,8 +10,8 @@ node n1 {
 	!
     }
     canvas c1
-    iconcoords {623.0 66.0}
-    labelcoords {623.0 98.0}
+    iconcoords {607.0 134.0}
+    labelcoords {607.0 166.0}
     interface-peer {eth0 n6}
     custom-config {
 	custom-config-id service:zebra
@@ -64,7 +64,7 @@ node n6 {
 	custom-config-id basic_range
 	custom-command {3 3 9 9 9}
 	config {
-	range=530
+	range=250
 	bandwidth=54000000
 	jitter=0
 	delay=20000
@@ -72,8 +72,8 @@ node n6 {
 	}
     }
     canvas c1
-    iconcoords {659.0 247.0}
-    labelcoords {649.0 287.0}
+    iconcoords {822.0 36.0}
+    labelcoords {812.0 76.0}
     interface-peer {e0 n1}
     interface-peer {e1 n2}
     interface-peer {e2 n3}
@@ -95,8 +95,8 @@ node n2 {
 	!
     }
     canvas c1
-    iconcoords {564.0 474.0}
-    labelcoords {564.0 506.0}
+    iconcoords {605.0 376.0}
+    labelcoords {605.0 408.0}
     interface-peer {eth0 n6}
     custom-config {
 	custom-config-id service:zebra
@@ -143,8 +143,8 @@ node n3 {
 	!
     }
     canvas c1
-    iconcoords {1068.0 236.0}
-    labelcoords {1068.0 268.0}
+    iconcoords {1012.0 231.0}
+    labelcoords {1012.0 263.0}
     interface-peer {eth0 n6}
     custom-config {
 	custom-config-id service:zebra
@@ -191,8 +191,8 @@ node n4 {
 	!
     }
     canvas c1
-    iconcoords {830.0 243.0}
-    labelcoords {830.0 275.0}
+    iconcoords {797.0 237.0}
+    labelcoords {797.0 269.0}
     interface-peer {eth0 n6}
     custom-config {
 	custom-config-id service:zebra
@@ -239,8 +239,8 @@ node n5 {
 	!
     }
     canvas c1
-    iconcoords {413.0 231.0}
-    labelcoords {413.0 263.0}
+    iconcoords {460.0 227.0}
+    labelcoords {460.0 259.0}
     interface-peer {eth0 n6}
     custom-config {
 	custom-config-id service:zebra
@@ -287,8 +287,8 @@ node n7 {
 	!
     }
     canvas c1
-    iconcoords {126.0 73.0}
-    labelcoords {126.0 105.0}
+    iconcoords {279.0 93.0}
+    labelcoords {279.0 125.0}
     interface-peer {eth0 n6}
 }
 
@@ -304,8 +304,8 @@ node n8 {
 	!
     }
     canvas c1
-    iconcoords {142.0 417.0}
-    labelcoords {142.0 449.0}
+    iconcoords {288.0 328.0}
+    labelcoords {288.0 360.0}
     interface-peer {eth0 n6}
 }
 
