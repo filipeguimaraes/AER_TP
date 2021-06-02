@@ -4,7 +4,7 @@ public class Constants {
     public static final String MULTICAST_ADDRESS = "FF15::1";
     public static final int MULTICAST_PORT = 9998;
 
-    public static final int MAX_SIZE = 4096; //bytes
+    public static final int MAX_SIZE = 8192; //bytes
     public static final int TTL = 3; //saltos
     public static final int DEAD_TIME = 20000; //nanosegundos
 
