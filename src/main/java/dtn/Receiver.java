@@ -29,7 +29,8 @@ public class Receiver {
                     Receiver.work(message, dp.getAddress());
                 }
             } catch (Exception e) {
-                System.out.println("Receive Multicast:" + e.getMessage());
+                System.out.println("Receiver:");
+                e.printStackTrace();
             }
 
         }).start();
