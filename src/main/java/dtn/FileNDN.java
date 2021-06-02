@@ -1,6 +1,10 @@
 package dtn;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FileNDN implements Serializable {
     private String name;
@@ -15,15 +19,10 @@ public class FileNDN implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public byte[] getDados() {
-        return dados;
-    }
-
-    public void setDados(byte[] dados) {
-        this.dados = dados;
+    public void savefile() throws IOException {
+        Path relativePath = Paths.get("");
+        Path path = Paths.get(relativePath.toAbsolutePath().toString()+"/"+name+".txt");
+        Files.write(path, this.dados);
+        System.out.println("File saved in "+path);
     }
 }

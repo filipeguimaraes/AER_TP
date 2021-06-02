@@ -17,25 +17,31 @@ public class Cache {
     }
 
 
-    public void addFile(FileNDN file){
+    public void addFile(FileNDN file) {
         try {
             lock();
-            if(!files.containsKey(file.getName())){
+            if (!files.containsKey(file.getName())) {
                 files.put(file.getName(), file);
             }
-        }finally {
+        } finally {
             unlock();
         }
     }
 
     public void addFiles(List<File> files) throws IOException {
-        for (File file : files) {
-            FileNDN fileNDN = new FileNDN(file.getName(), Files.readAllBytes(file.toPath()));
+        try {
+            lock();
+            for (File file : files) {
+                FileNDN fileNDN = new FileNDN(file.getName(), Files.readAllBytes(file.toPath()));
+                this.files.put(fileNDN.getName(), fileNDN);
+            }
+        } finally {
+            unlock();
         }
 
     }
 
-    public boolean containsFile(FileNDN file){
+    public boolean containsFile(FileNDN file) {
         return files.containsKey(file.getName());
     }
 
@@ -43,11 +49,11 @@ public class Cache {
         return files;
     }
 
-    public void lock(){
+    public void lock() {
         lock.lock();
     }
 
-    public void unlock(){
+    public void unlock() {
         lock.unlock();
     }
 

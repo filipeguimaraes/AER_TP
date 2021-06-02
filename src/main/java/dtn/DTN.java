@@ -6,16 +6,13 @@ import p2p.P2P;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.time.LocalDateTime;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 
 public class DTN {
     private static DTN instance = null;
     private final Cache cache;
     private final String name;
-    private final Deque<Message> postPendent = new ArrayDeque<>();
+    private final Map<String,Message> postPendent = new HashMap<>(); //messageID
     private final List<String> interestsSent = new ArrayList<>();
 
     private DTN(String name) {
@@ -44,13 +41,14 @@ public class DTN {
         FileNDN file = new FileNDN(fileName, new byte[0]);
         for (InetAddress dest : destination) {
             try {
-                System.out.println("Enviei um pedido!");
                 Message interest = new Message(messageID,
                         new ArrayList<>(),
                         Constants.TTL,
                         Constants.INTEREST,
                         file);
                 interest.send(dest);
+
+                System.out.println("Enviei um pedido para: "+dest.getHostAddress());
             } catch (IOException e) {
                 System.out.println("Can't send NDN interest to " + dest + "! more info: ");
                 e.printStackTrace();
@@ -74,8 +72,8 @@ public class DTN {
         message.decrementTtl();
         for (InetAddress dest : destination) {
             try {
-                System.out.println("Reencaminhei um pedido!");
                 message.send(dest);
+                System.out.println("Reencaminhei um pedido para: "+dest.getHostAddress());
             } catch (IOException e) {
                 System.out.println("Can't send NDN interest to " + dest + "! more info: ");
                 e.printStackTrace();
@@ -108,16 +106,35 @@ public class DTN {
         }
     }
 
-    public void sendPost(Message message) {
-        //TODO
+    public void confirmPost(String messageID){
+        postPendent.remove(messageID);
     }
+
+    //reencaminhar post
+    public void sendPost(Message message) {
+        try {
+            message.send(message.getPath().get(message.getPath().size()-1));
+        } catch (IOException e) {
+            System.out.println("Cannot send Post! Retrying later.");
+        }
+    }
+
 
     public void receivePost(Message message) {
-        //TODO
-    }
 
-    public void downloadFile(Message message) {
-        //TODO
+        if (message.getPath().size() == 2) { //Caso seja o ultimo salto fica também em cache
+            cache.addFile(message.getFile());
+        }
+        if (message.getPath().size() == 1) {
+            cache.addFile(message.getFile());
+            try {
+                message.getFile().savefile();
+            } catch (IOException e) {
+                System.out.println("Error downloading file!");
+            }
+        }else {
+            sendPost(message);
+        }
     }
 
     public Cache getCache() {
