@@ -115,7 +115,7 @@ public class DTN {
     //reencaminhar post
     public void sendPost(Message message) {
         try {
-            System.out.println("Send a post!");
+            System.out.println("Send a post!"+ message.getPath());
             message.send(message.getPath().get(message.getPath().size() - 1));
         } catch (IOException e) {
             System.out.println("Cannot send Post! Retrying later.");
@@ -123,7 +123,7 @@ public class DTN {
     }
 
     public void receivePost(Message message) {
-        System.out.println("Receive a post!");
+        System.out.println("Receive a post! "+ message.getPath());
         if (message.getPath().size() == 2) { //Caso seja o ultimo salto fica também em cache
             cache.addFile(message.getFile());
         }

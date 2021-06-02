@@ -47,9 +47,6 @@ public class Menu {
                 case "4":
                     clearScreen();
                     P2P.getInstance().printFilesKnown();
-                    System.out.println("Path: ");
-                    Scanner s4 = new Scanner(System.in);
-                    P2P.getInstance().sendRequestFile(s4.nextLine());
                     break;
                 default:
                     clearScreen();
