@@ -17,12 +17,14 @@ public class Menu {
             Menu.menu();
         } else {
             clearScreen();
-            System.out.println("####################################");
-            System.out.println("# 1: Show connected peers.         #");
-            System.out.println("# 2: Show disconnected peers.      #");
-            System.out.println("# 3: Search a file in the network. #");
-            System.out.println("# 4: List files known.             #");
-            System.out.println("####################################");
+            System.out.println("########################################");
+            System.out.println("#                                      #");
+            System.out.println("#   1: Show connected peers.           #");
+            System.out.println("#   2: Show disconnected peers.        #");
+            System.out.println("#   3: Search a file in the network.   #");
+            System.out.println("#   4: List files on cache.            #");
+            System.out.println("#                                      #");
+            System.out.println("########################################");
 
             System.out.println("Option:");
 

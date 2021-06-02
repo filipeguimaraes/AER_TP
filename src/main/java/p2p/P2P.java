@@ -165,56 +165,20 @@ public class P2P {
     }
 
     public void sendSearch(String fileName) {
-        List<InetAddress> peersConhecidos = new ArrayList<>();
-        for (String ip : peers.keySet()) {
-            if (peers.get(ip).isON()) {
-                peersConhecidos.add(peers.get(ip).getAddress());
+        try {
+            lock();
+            List<InetAddress> peersConhecidos = new ArrayList<>();
+            for (String ip : peers.keySet()) {
+                if (peers.get(ip).isON()) {
+                    peersConhecidos.add(peers.get(ip).getAddress());
+                }
             }
+            DTN.getInstance().sendInterest(fileName, peersConhecidos);
+        } finally {
+            unlock();
         }
-        DTN.getInstance().sendInterest(fileName, peersConhecidos);
-
-        /**
-         System.out.println("Searching for " + query + "...");
-         Message search = new Message(Constantes.QUERY, query);
-         try {
-         lock();
-         List<Peer> peers = new ArrayList<>(this.peers.values());
-         for (Peer p : peers) {
-         if (p.isON()) {
-         try {
-         sendSimpleMessage(search, p.getAddress());
-         } catch (IOException e) {
-         System.out.println("Cannot send query to " + p.getAddress());
-         }
-         }
-         }
-         } finally {
-         unlock();
-         }
-         */
     }
 
-
-        /**
-    public void searchFile(String file, InetAddress requestOrigin) {
-
-         System.out.println("Recebi " + file);
-         List<String> keys = new ArrayList<>(this.files.keySet());
-         for (String key : keys) {
-         if (key.contains(file)) {
-         try {
-         //Caso tenha registo do ficheiro envia a key correspondente!
-         sendSimpleMessage(new Message(Constantes.QUERY_RESPONSE, key), requestOrigin);
-         } catch (IOException e) {
-         System.out.println("Cannot response to " + requestOrigin.toString());
-         }
-         break;
-         }
-         }
-
-
-    }
-    */
 
     /**
      * Carrega peers manualmente especificados no ficheiro de configuração.
@@ -262,47 +226,26 @@ public class P2P {
     }
 
     /**
-     * Cria uma associação ao ficheiro pedido ao peer que enviou a mensagem.
-     *
-     * @param file Ficheiro solicitado.
-     * @param peer Peer que enviou a mensagem.
-     */
-    public void sourcePeerFile(String file, InetAddress peer) {
-        /**
-         if (filePeers.containsKey(file)) {
-         filePeers.get(file).add(peers.get(peer.toString()));
-         } else {
-         List<Peer> filep = new ArrayList<>();
-         filep.add(peers.get(peer.toString()));
-         filePeers.put(file, filep);
-         }
-         */
-        //TODO
-    }
-
-    /**
-     * Imprime no ecrã os ficheiros que ele sabe que existem e os respetivos nós que os têm.
+     * Imprime no ecrã os ficheiros que ele tem em cache.
      */
     public void printFilesKnown() {
-        /**
-         try {
-         lock();
-         List<String> files = new ArrayList<>(filePeers.keySet());
-         int i = 1;
-         System.out.println("---------------------------------------");
-         for (String file : files) {
-         System.out.println("[" + file + "]: " + filePeers.get(file).toString());
-         i++;
-         }
-         if (i == 1) {
-         System.out.println("No files.");
-         }
-         System.out.println("---------------------------------------");
-         } finally {
-         unlock();
-         }
-         */
-        //TODO
+        try {
+            DTN.getInstance().getCache().lock();
+            List<String> files = new ArrayList<>(DTN.getInstance().getCache().getFiles().keySet());
+            int i = 1;
+            System.out.println("---------------------------------------");
+            for (String file : files) {
+                System.out.println(i+": [" + file + "]");
+                i++;
+            }
+            if (i == 1) {
+                System.out.println("No files.");
+            }
+            System.out.println("---------------------------------------");
+        } finally {
+            DTN.getInstance().getCache().unlock();
+        }
+
     }
 
     /**

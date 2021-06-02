@@ -1,24 +1,26 @@
 package dtn;
 
 
+import p2p.P2P;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.time.LocalDateTime;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Deque;
 import java.util.List;
-import java.util.Map;
 
 public class DTN {
     private static DTN instance = null;
-    private final String name;
     private final Cache cache;
-    private final Map<String, Message> pendingMessages;
+    private final String name;
+    private final Deque<Message> postPendent = new ArrayDeque<>();
+    private final List<String> interestsSent = new ArrayList<>();
 
     private DTN(String name) {
         this.name = name;
         this.cache = new Cache();
-        this.pendingMessages = new HashMap<>();
         Receiver.receiveMulticast();
     }
 
@@ -39,10 +41,14 @@ public class DTN {
     public void sendInterest(String fileName, List<InetAddress> destination) {
         String messageID = this.name + fileName + LocalDateTime.now();
         FileNDN file = new FileNDN(fileName, new byte[0]);
-        Message interest = new Message(messageID, new ArrayList<>(), Constants.TTL, Constants.INTEREST, file);
         for (InetAddress dest : destination) {
             try {
                 System.out.println("Enviei um pedido!");
+                Message interest = new Message(messageID,
+                        new ArrayList<>(),
+                        Constants.TTL,
+                        Constants.INTEREST,
+                        file);
                 interest.send(dest);
             } catch (IOException e) {
                 System.out.println("Can't send NDN interest to " + dest + "! more info: ");
@@ -50,6 +56,35 @@ public class DTN {
             }
         }
     }
+
+    public void sendInterest(Message message) {
+        if (message.getTtl() > 0) {
+            List<InetAddress> destination = new ArrayList<>();
+            try {
+                P2P.getInstance().lock();
+                for (String ip : P2P.getInstance().getPeers().keySet()) {
+                    if (P2P.getInstance().getPeers().get(ip).isON()) {
+                        destination.add(P2P.getInstance().getPeers().get(ip).getAddress());
+                    }
+                }
+            } finally {
+                P2P.getInstance().unlock();
+            }
+
+            for (InetAddress dest : destination) {
+                try {
+                    System.out.println("Reencaminhei um pedido!");
+                    message.decrementTtl();
+                    message.send(dest);
+                } catch (IOException e) {
+                    System.out.println("Can't send NDN interest to " + dest + "! more info: ");
+                    e.printStackTrace();
+                }
+            }
+        } else System.out.println("Message ignored ttl = 0.");
+
+    }
+
 
     public void receiveInterest(Message message) {
         if (cache.containsFile(message.getFile())) {
@@ -65,8 +100,8 @@ public class DTN {
 
             sendPost(response);
         } else {
-            System.out.println("Ia enviar");
-            //sendInterest();
+            System.out.println("Recebi um pedido! ttl =" + message.getTtl());
+            sendInterest(message);
             //TODO
         }
     }

@@ -36,9 +36,9 @@ public class Receiver {
 
     private static void work(Message message, InetAddress originAddress) {
         DTN dtn = DTN.getInstance();
-        message.getPath().add(originAddress);
         switch (message.getType()) {
             case Constants.INTEREST:
+                message.getPath().add(originAddress);
                 dtn.receiveInterest(message);
                 break;
             case Constants.POST:
