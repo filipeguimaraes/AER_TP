@@ -60,30 +60,27 @@ public class DTN {
 
     public void sendInterest(Message message) {
         interestsSent.add(message.getId());
-        if (message.getTtl() > 0) {
-            List<InetAddress> destination = new ArrayList<>();
+        List<InetAddress> destination = new ArrayList<>();
+        try {
+            P2P.getInstance().lock();
+            for (String ip : P2P.getInstance().getPeers().keySet()) {
+                if (P2P.getInstance().getPeers().get(ip).isON()) {
+                    destination.add(P2P.getInstance().getPeers().get(ip).getAddress());
+                }
+            }
+        } finally {
+            P2P.getInstance().unlock();
+        }
+        message.decrementTtl();
+        for (InetAddress dest : destination) {
             try {
-                P2P.getInstance().lock();
-                for (String ip : P2P.getInstance().getPeers().keySet()) {
-                    if (P2P.getInstance().getPeers().get(ip).isON()) {
-                        destination.add(P2P.getInstance().getPeers().get(ip).getAddress());
-                    }
-                }
-            } finally {
-                P2P.getInstance().unlock();
+                System.out.println("Reencaminhei um pedido!");
+                message.send(dest);
+            } catch (IOException e) {
+                System.out.println("Can't send NDN interest to " + dest + "! more info: ");
+                e.printStackTrace();
             }
-
-            for (InetAddress dest : destination) {
-                try {
-                    System.out.println("Reencaminhei um pedido!");
-                    message.decrementTtl();
-                    message.send(dest);
-                } catch (IOException e) {
-                    System.out.println("Can't send NDN interest to " + dest + "! more info: ");
-                    e.printStackTrace();
-                }
-            }
-        } else System.out.println("Message ignored ttl = 0.");
+        }
 
     }
 
@@ -103,8 +100,10 @@ public class DTN {
 
                 sendPost(response);
             } else {
-                System.out.println("Recebi um pedido! ttl =" + message.getTtl());
-                sendInterest(message);
+                if (message.getTtl() > 0) {
+                    sendInterest(message);
+                } else System.out.println("TTL is 0.");
+
             }
         }
     }
