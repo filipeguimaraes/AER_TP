@@ -1,4 +1,4 @@
-package network;
+package p2p;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -39,7 +39,7 @@ public class Message implements Serializable {
      * @throws Exception Caso este método seja usado num tipo de mensagem inválido.
      */
     public List<InetAddress> getPeers() throws Exception {
-        if(!(this.type == Variables.PEERS))
+        if(!(this.type == Constantes.PEERS))
             throw new Exception("Tipo de mensagem inválido!");
 
         List<InetAddress> peers = new ArrayList<>();

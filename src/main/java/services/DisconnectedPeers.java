@@ -1,8 +1,8 @@
 package services;
 
-import network.P2P;
-import network.Peer;
-import network.Variables;
+import p2p.P2P;
+import p2p.Peer;
+import p2p.Constantes;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -39,7 +39,7 @@ public class DisconnectedPeers {
                     for (Peer peer : peers) {
                         if (peer.isON()) {
                             Duration duration = Duration.between(peer.getTimeStamp(), LocalDateTime.now());
-                            if (duration.toMillis() > Variables.DEAD_TIME) {
+                            if (duration.toMillis() > Constantes.DEAD_TIME) {
                                 //System.out.println("(" + LocalDateTime.now() +") P2P.Peer desconectado: " + peer.getAddress().toString());
                                 p2P.getPeers().get(peer.getAddress().toString()).deactivate();
                             }
@@ -49,7 +49,7 @@ public class DisconnectedPeers {
                     p2P.unlock();
                 }
                 try {
-                    Thread.sleep(Variables.HELLO_TIME);
+                    Thread.sleep(Constantes.HELLO_TIME);
                 } catch (Exception ignored) {
                     System.out.println("Something went wrong!");
                 }

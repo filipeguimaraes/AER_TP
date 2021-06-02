@@ -1,10 +1,9 @@
 package services;
 
-import network.Message;
-import network.P2P;
-import network.Peer;
-import network.Variables;
-import services.FileTransfer;
+import p2p.Message;
+import p2p.P2P;
+import p2p.Peer;
+import p2p.Constantes;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -23,24 +22,26 @@ public class Multiplexer {
         P2P p2P = P2P.getInstance();
 
         switch (message.getType()) {
-            case Variables.HELLO:
+            case Constantes.HELLO:
                 if (!originAddress.toString().contains("127.0.0.1")) {
                     p2P.addPeer(new Peer(originAddress, LocalDateTime.now()));
                 }
                 break;
-            case Variables.QUERY:
+                /**
+            case Constantes.QUERY:
                 p2P.searchFile(message.getMessage(), originAddress);
                 break;
-            case Variables.QUERY_RESPONSE:
+            case Constantes.QUERY_RESPONSE:
                 p2P.sourcePeerFile(message.getMessage(), originAddress);
-            case Variables.PING:
+                 */
+            case Constantes.PING:
                 if (!originAddress.toString().contains("127.0.0.1")) {
                     p2P.addPeer(new Peer(originAddress, LocalDateTime.now()));
                 }
-                Message hello = new Message(Variables.HELLO, null);
+                Message hello = new Message(Constantes.HELLO, null);
                 p2P.sendSimpleMessage(hello, originAddress);
                 break;
-            case Variables.PEERS:
+            case Constantes.PEERS:
                 System.out.println("Recebi peers");
                 List<InetAddress> peers = null;
                 try {
@@ -50,7 +51,7 @@ public class Multiplexer {
                 }
                 p2P.addPeers(peers);
                 break;
-            case Variables.REQUEST:
+            case Constantes.REQUEST:
                 FileTransfer.send(message.getMessage());
                 break;
             default:
