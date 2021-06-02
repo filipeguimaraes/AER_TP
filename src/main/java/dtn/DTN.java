@@ -86,10 +86,7 @@ public class DTN {
     public void receiveInterest(Message message) {
         if (!interestsSent.contains(message.getId())) {
             if (cache.containsFile(message.getFile())) {
-                InetAddress dest = message.getPath().get(message.getPath().size() - 1);
                 List<InetAddress> path = message.getPath();
-                path.remove(message.getPath().size() - 1);
-
                 Message response = new Message(message.getId(),
                         path,
                         0,
@@ -118,7 +115,6 @@ public class DTN {
             System.out.println("Cannot send Post! Retrying later.");
         }
     }
-
 
     public void receivePost(Message message) {
 
