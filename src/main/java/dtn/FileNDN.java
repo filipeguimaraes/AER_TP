@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 
 public class FileNDN implements Serializable {
     private String name;
@@ -21,7 +22,7 @@ public class FileNDN implements Serializable {
 
     public void savefile() throws IOException {
         Path relativePath = Paths.get("");
-        Path path = Paths.get(relativePath.toAbsolutePath().toString()+"/"+name+".txt");
+        Path path = Paths.get(relativePath.toAbsolutePath().toString()+"/"+ LocalDateTime.now()+"-"+name);
         Files.write(path, this.dados);
         System.out.println("File saved in "+path);
     }

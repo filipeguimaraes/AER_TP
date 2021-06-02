@@ -10,11 +10,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class DTN {
     private static DTN instance = null;
     private final Cache cache;
     private final String name;
+    private ReentrantLock lock = new ReentrantLock();
     private final Map<String, Message> postPendent = new HashMap<>(); //messageID
     private final List<String> interestsSent = new ArrayList<>();
 
@@ -22,6 +24,7 @@ public class DTN {
         this.name = name;
         this.cache = new Cache();
         Receiver.receiveMulticast();
+        retransmit();
     }
 
     public static DTN getInstance() {
@@ -112,7 +115,7 @@ public class DTN {
         postPendent.remove(messageID);
     }
 
-    //reencaminhar post
+    //tambem reencaminhar post
     public void sendPost(Message message) {
         try {
             System.out.println("Send a post!"+ message.getPath());
@@ -126,6 +129,12 @@ public class DTN {
         System.out.println("Receive a post! "+ message.getPath());
         if (message.getPath().size() == 1) { //Caso seja o ultimo salto fica também em cache
             cache.addFile(message.getFile());
+            System.out.println("Waiting 3 seconds for testing dtn!");
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                System.out.println("Can't sleep anymore!");
+            }
         }
         if (message.getPath().size() == 0) {
             cache.addFile(message.getFile());
@@ -139,6 +148,22 @@ public class DTN {
             sendPost(message);
         }
     }
+
+    public void retransmit(){
+        new Thread(() ->{
+            while (true){
+                try {
+                    lock.lock();
+                    for (Message m : postPendent.values()) {
+                        sendPost(m);
+                    }
+                } finally {
+                    lock.unlock();
+                }
+            }
+        }).start();
+    }
+
 
     public Cache getCache() {
         return cache;
