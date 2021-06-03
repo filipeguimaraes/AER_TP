@@ -139,6 +139,7 @@ public class DTN {
             if (postsReceived.contains(message.getId())) {
                 System.out.println("Post ignored!");
             } else {
+                postsReceived.add(message.getId());
                 cache.addFile(message.getFile());
                 try {
                     message.getFile().saveFile();
