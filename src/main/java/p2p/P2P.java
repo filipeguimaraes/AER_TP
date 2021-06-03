@@ -18,6 +18,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Modulo principal da rede p2p. Só existe uma instância por nó.
+ */
 public class P2P {
     private static P2P instance = null;
     private final ReentrantLock lock = new ReentrantLock();
@@ -25,12 +28,9 @@ public class P2P {
     private int deadTime = Constantes.DEAD_TIME;
     private Map<String, Peer> peers;
 
-    //private Map<String, List<Peer>> filePeers;
-
 
     private P2P() {
         this.peers = new TreeMap<>();
-        //this.filePeers = new HashMap<>();
     }
 
     /**
@@ -235,7 +235,7 @@ public class P2P {
             int i = 1;
             System.out.println("---------------------------------------");
             for (String file : files) {
-                System.out.println(i+": [" + file + "]");
+                System.out.println(i + ": [" + file + "]");
                 i++;
             }
             if (i == 1) {
@@ -248,28 +248,6 @@ public class P2P {
 
     }
 
-    /**
-     * Enviar aos nós que conhece que sabe que têm o ficheiro e estão ligados uma solicitação de um novo ficheiro
-     *
-     * @param file Nome do ficheiro pretendido.
-     * @throws IOException Caso não consiga enviar a mensagem.
-     */
-    public void sendRequestFile(String file) throws IOException {
-        /**
-         Message request = new Message(Constantes.REQUEST, file);
-
-         for (Peer peer : this.filePeers.get(file)) {
-         if (peer.isON()) {
-         sendSimpleMessage(request, peer.getAddress());
-         FileTransfer.receive((new File(file)).getName(), peer.getAddress());
-         return;
-         }
-         }
-
-         System.out.println("No peers available to download the file!");
-         */
-        //TODO
-    }
 
     /**
      * Retorna a lista de peers no momento. (Not Thread safe)

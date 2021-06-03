@@ -1,7 +1,7 @@
 package services;
 
-import p2p.Message;
 import p2p.Constantes;
+import p2p.Message;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -10,6 +10,9 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
+/**
+ * Serviço para estar à escuta de mensagens.
+ */
 public class Receiver {
     public static Receiver instance = null;
     public boolean flag;

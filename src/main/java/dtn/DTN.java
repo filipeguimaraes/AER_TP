@@ -12,14 +12,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Modulo principal da rede dtn. Só existe uma instância por nó.
+ */
 public class DTN {
     private static DTN instance = null;
     private final Cache cache;
     private final String name;
-    private final Map<String, Message> postPendent = new HashMap<>();
-    private final List<String> postsReceived = new ArrayList<>();
-    private final List<String> interestsSent = new ArrayList<>();
-    private ReentrantLock lock = new ReentrantLock();
+    private final Map<String, Message> postPendent = new HashMap<>(); //<messageID,message>
+    private final List<String> postsReceived = new ArrayList<>(); //<messageID>
+    private final List<String> interestsSent = new ArrayList<>(); //<messageID>
+    private final ReentrantLock lock = new ReentrantLock();
 
     private DTN(String name) {
         this.name = name;
@@ -35,6 +38,12 @@ public class DTN {
         return instance;
     }
 
+    /**
+     * Só executado ao iniciar o software.
+     *
+     * @param name Nome do nó.
+     * @return Instância única.
+     */
     public static DTN getInstance(String name) {
         if (instance == null) {
             instance = new DTN(name);
@@ -42,6 +51,12 @@ public class DTN {
         return instance;
     }
 
+    /**
+     * Usado para enviar o interest. Chamada pela rede p2p.
+     *
+     * @param fileName    Nome do ficheiro a ser requisitado.
+     * @param destination Destinos conhecidos para enviar.
+     */
     public void sendInterest(String fileName, List<InetAddress> destination) {
         String messageID = this.name + fileName + LocalDateTime.now();
         interestsSent.add(messageID);
@@ -63,6 +78,11 @@ public class DTN {
         }
     }
 
+    /**
+     * Reencaminha o interest para outros nós conhecidos pela rede p2p.
+     *
+     * @param message Mensagem para reencaminhar.
+     */
     public void sendInterest(Message message) {
         interestsSent.add(message.getId());
         List<InetAddress> destination = new ArrayList<>();
@@ -90,6 +110,12 @@ public class DTN {
     }
 
 
+    /**
+     * Trata do interest recebido. Se tiver o ficheiro cria um POST,
+     * caso não tenha reencaminha o pedido.
+     *
+     * @param message Mensagem recebida.
+     */
     public void receiveInterest(Message message) {
         if (cache.containsFile(message.getFile())) {
             List<InetAddress> path = message.getPath();
@@ -119,11 +145,21 @@ public class DTN {
 
     }
 
+    /**
+     * Confirmar que o post foi recebido pelo destino.
+     *
+     * @param messageID Id único da mensagem confirmada.
+     */
     public void confirmPost(String messageID) {
         postPendent.remove(messageID);
     }
 
-    //tambem reencaminhar post
+
+    /**
+     * Enviar ou reencaminhar um post.
+     *
+     * @param message POST.
+     */
     public void sendPost(Message message) {
         try {
             System.out.println("Send a post!" + message.getPath());
@@ -133,6 +169,12 @@ public class DTN {
         }
     }
 
+    /**
+     * Trata um POST recebido. Se for para o nó guarda o ficheiro.
+     * Caso contrário guarda o pedido e tenta enviar ao próximo nó.
+     *
+     * @param message POST.
+     */
     public void receivePost(Message message) {
         System.out.println("Receive a post! " + message.getPath());
         if (message.getPath().size() == 0) {
@@ -153,6 +195,9 @@ public class DTN {
         }
     }
 
+    /**
+     * Serviço que retransmite os POSTs não confirmados.
+     */
     public void retransmit() {
         new Thread(() -> {
             while (true) {

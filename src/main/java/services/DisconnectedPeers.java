@@ -1,24 +1,28 @@
 package services;
 
+import p2p.Constantes;
 import p2p.P2P;
 import p2p.Peer;
-import p2p.Constantes;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/**
+ * Serviço para regularmente pesquisar por peers desconectados, ou seja,
+ * com um timestamp mais antigo do que o predefinido.
+ */
 public class DisconnectedPeers {
 
-    private boolean flag;
     private static DisconnectedPeers instance = null;
+    private boolean flag;
 
     private DisconnectedPeers() {
         this.flag = true;
     }
 
-    public static DisconnectedPeers getInstance(){
-        if (instance == null){
+    public static DisconnectedPeers getInstance() {
+        if (instance == null) {
             instance = new DisconnectedPeers();
         }
         return instance;
@@ -58,16 +62,16 @@ public class DisconnectedPeers {
         }).start();
     }
 
-    public void init(){
+    public void init() {
         this.flag = true;
         killPeers();
     }
 
-    public void stop(){
+    public void stop() {
         this.flag = false;
     }
 
-    public String getState(){
+    public String getState() {
         return this.flag ? "ON" : "OFF";
     }
 

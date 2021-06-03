@@ -8,6 +8,9 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
+/**
+ * Serviço para estar à escuta de mensagens.
+ */
 public class Receiver {
 
     public static void receiveMulticast() {
@@ -36,6 +39,11 @@ public class Receiver {
         }).start();
     }
 
+    /**
+     * Trata as mensagens consoante o seu tipo
+     * @param message Mensagem a tratar.
+     * @param originAddress Endereço de origem.
+     */
     private static void work(Message message, InetAddress originAddress) {
         DTN dtn = DTN.getInstance();
         switch (message.getType()) {

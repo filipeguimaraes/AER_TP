@@ -1,7 +1,7 @@
 package services;
 
-import p2p.Message;
 import p2p.Constantes;
+import p2p.Message;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+/**
+ * Serviço para procurar novos peers conectados diretamente
+ */
 public class MulticastSearch {
 
     private static MulticastSearch instance = null;

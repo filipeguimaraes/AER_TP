@@ -1,20 +1,24 @@
 package services;
 
+import p2p.Constantes;
 import p2p.Message;
 import p2p.P2P;
 import p2p.Peer;
-import p2p.Constantes;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Tratar os diferentes tipos de mensagem
+ */
 public class Multiplexer {
 
     /**
      * Método para tratar as mensagens recebidas chamando os métodos respetivos.
-     * @param message Mensagem recebida
+     *
+     * @param message       Mensagem recebida
      * @param originAddress Endereço de origem.
      * @throws IOException Exceção.
      */
@@ -27,13 +31,6 @@ public class Multiplexer {
                     p2P.addPeer(new Peer(originAddress, LocalDateTime.now()));
                 }
                 break;
-                /**
-            case Constantes.QUERY:
-                p2P.searchFile(message.getMessage(), originAddress);
-                break;
-            case Constantes.QUERY_RESPONSE:
-                p2P.sourcePeerFile(message.getMessage(), originAddress);
-                 */
             case Constantes.PING:
                 if (!originAddress.toString().contains("127.0.0.1")) {
                     p2P.addPeer(new Peer(originAddress, LocalDateTime.now()));
@@ -50,9 +47,6 @@ public class Multiplexer {
                     System.out.println("receive: " + e.getMessage());
                 }
                 p2P.addPeers(peers);
-                break;
-            case Constantes.REQUEST:
-                FileTransfer.send(message.getMessage());
                 break;
             default:
                 System.out.println("Recebeu uma mensagem inválida!");

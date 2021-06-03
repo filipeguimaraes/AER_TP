@@ -5,6 +5,9 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Modulação das mensagens a circular na rede p2p
+ */
 public class Message implements Serializable {
 
     int type;
@@ -35,11 +38,12 @@ public class Message implements Serializable {
     /**
      * Usado caso seja uma mensagem de troca de peers para separar os diferentes peers
      * na mensagem. (não usado)
+     *
      * @return Lista de peers.
      * @throws Exception Caso este método seja usado num tipo de mensagem inválido.
      */
     public List<InetAddress> getPeers() throws Exception {
-        if(!(this.type == Constantes.PEERS))
+        if (!(this.type == Constantes.PEERS))
             throw new Exception("Tipo de mensagem inválido!");
 
         List<InetAddress> peers = new ArrayList<>();

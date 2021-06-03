@@ -1,15 +1,17 @@
 package services;
 
+import p2p.Constantes;
 import p2p.Message;
 import p2p.P2P;
 import p2p.Peer;
-import p2p.Constantes;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Serviço para enviar mensagens para verificar se algum peer se desconectou.
+ */
 public class PingPeers {
 
     private static PingPeers instance = null;

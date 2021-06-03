@@ -8,9 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Estrutura que guarda os ficheiro que o nó contem bem como os ficheiros que recebeu.
+ */
 public class Cache {
     private final ReentrantLock lock = new ReentrantLock();
-    private final Map<String, FileNDN> files; //nomeficheiro + ficheiro
+    private final Map<String, FileNDN> files; //<nomeficheiro,ficheiro>
 
     public Cache() {
         this.files = new HashMap<>();

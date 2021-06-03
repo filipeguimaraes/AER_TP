@@ -9,12 +9,15 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.List;
 
+/**
+ * Modulação das mensagens a circular na rede dtn
+ */
 public class Message implements Serializable {
-    private String id;
-    private List<InetAddress> path;
+    private final String id;
+    private final List<InetAddress> path;
     private int ttl;
-    private int type;
-    private FileNDN file;
+    private final int type;
+    private final FileNDN file;
 
 
     public Message(String id, List<InetAddress> path, int ttl, int type, FileNDN file) {
@@ -55,17 +58,10 @@ public class Message implements Serializable {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public List<InetAddress> getPath() {
         return path;
     }
 
-    public void setPath(List<InetAddress> path) {
-        this.path = path;
-    }
 
     public int getTtl() {
         return ttl;
@@ -75,16 +71,8 @@ public class Message implements Serializable {
         return type;
     }
 
-    public void setType(int type) {
-        this.type = type;
-    }
-
     public FileNDN getFile() {
         return file;
-    }
-
-    public void setFile(FileNDN file) {
-        this.file = file;
     }
 
     public void decrementTtl() {
