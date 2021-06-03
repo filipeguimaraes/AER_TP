@@ -155,7 +155,7 @@ public class DTN {
                     lock.lock();
                     for (Message m : postPendent.values()) {
                         try {
-                            System.out.println("Trying to retransmit!");
+                            System.out.println("Trying to retransmit to "+m.getPath().get(m.getPath().size()-1));
                             m.send(m.getPath().get(m.getPath().size()-1));
                         } catch (IOException e) {
                             System.out.println("Cannot retransmit! Trying later.");
