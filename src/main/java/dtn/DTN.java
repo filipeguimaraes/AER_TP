@@ -107,7 +107,7 @@ public class DTN {
             } catch (InterruptedException e) {
                 System.out.println("Can't sleep anymore!");
             }
-            postPendent.put(message.getId(),message);
+            postPendent.put(response.getId(),response);
             sendPost(response);
         } else {
             if (!interestsSent.contains(message.getId())) {
