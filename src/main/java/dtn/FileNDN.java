@@ -20,9 +20,9 @@ public class FileNDN implements Serializable {
         return name;
     }
 
-    public void savefile() throws IOException {
+    public void saveFile() throws IOException {
         Path relativePath = Paths.get("");
-        Path path = Paths.get(relativePath.toAbsolutePath().toString()+"/"+ LocalDateTime.now()+"-"+name);
+        Path path = Paths.get(relativePath.toAbsolutePath()+"/"+ LocalDateTime.now()+"-"+name);
         Files.write(path, this.dados);
         System.out.println("File saved in "+path);
     }

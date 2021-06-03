@@ -99,12 +99,7 @@ public class DTN {
                     Constants.POST,
                     cache.getFiles().get(message.getFile().getName()));
 
-            System.out.println("Waiting 3 seconds for testing dtn!");
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                System.out.println("Can't sleep anymore!");
-            }
+
 
             System.out.println("I have the file!");
             postPendent.put(message.getId(),message);
@@ -125,6 +120,16 @@ public class DTN {
 
     //tambem reencaminhar post
     public void sendPost(Message message) {
+        if(message.getPath().size() == 1){
+            cache.addFile(message.getFile());
+            System.out.println("Waiting 3 seconds for testing dtn!");
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                System.out.println("Can't sleep anymore!");
+            }
+        }
+
         try {
             System.out.println("Send a post!"+ message.getPath());
             message.send(message.getPath().get(message.getPath().size() - 1));
@@ -135,24 +140,14 @@ public class DTN {
 
     public void receivePost(Message message) {
         System.out.println("Receive a post! "+ message.getPath());
-        if (message.getPath().size() == 1) { //Caso seja o ultimo salto fica também em cache
-            cache.addFile(message.getFile());
-            System.out.println("Waiting 3 seconds for testing dtn!");
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                System.out.println("Can't sleep anymore!");
-            }
-        }
         if (message.getPath().size() == 0) {
             cache.addFile(message.getFile());
             try {
-                message.getFile().savefile();
+                message.getFile().saveFile();
             } catch (IOException e) {
                 System.out.println("Error downloading file!");
             }
-        }
-        if (message.getPath().size() > 1) {
+        }else if (message.getPath().size() > 1) {
             postPendent.put(message.getId(),message);
             sendPost(message);
         }
@@ -164,7 +159,11 @@ public class DTN {
                 try {
                     lock.lock();
                     for (Message m : postPendent.values()) {
-                        sendPost(m);
+                        try {
+                            m.send(m.getPath().get(m.getPath().size()-1));
+                        } catch (IOException e) {
+                            System.out.println("Cannot retransmit! Trying later.");
+                        }
                     }
                 } finally {
                     lock.unlock();

@@ -7,7 +7,6 @@ import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.List;
 
 public class Receiver {
 
@@ -45,13 +44,13 @@ public class Receiver {
                 dtn.receiveInterest(message);
                 break;
             case Constants.POST:
-                Message confirm = new Message(message.getId(),null,0,Constants.CONFIRM,null);
+                Message confirm = new Message(message.getId(), null, 0, Constants.CONFIRM, null);
                 try {
                     confirm.send(originAddress);
                 } catch (IOException e) {
                     System.out.println("Cannot confirm post!");
                 }
-                message.getPath().remove(message.getPath().size()-1);
+                message.getPath().remove(message.getPath().size() - 1);
                 dtn.receivePost(message);
                 break;
             case Constants.CONFIRM:

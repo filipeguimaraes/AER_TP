@@ -7,8 +7,6 @@ import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.List;
 
 public class Message implements Serializable {
@@ -19,8 +17,7 @@ public class Message implements Serializable {
     private FileNDN file;
 
 
-
-    public Message( String id, List<InetAddress> path, int ttl, int type, FileNDN file) {
+    public Message(String id, List<InetAddress> path, int ttl, int type, FileNDN file) {
         this.id = id;
         this.path = path;
         this.ttl = ttl;
@@ -58,8 +55,16 @@ public class Message implements Serializable {
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public List<InetAddress> getPath() {
         return path;
+    }
+
+    public void setPath(List<InetAddress> path) {
+        this.path = path;
     }
 
     public int getTtl() {
@@ -70,27 +75,19 @@ public class Message implements Serializable {
         return type;
     }
 
-    public FileNDN getFile() {
-        return file;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setPath(List<InetAddress> path) {
-        this.path = path;
-    }
-
-    public void decrementTtl() {
-        this.ttl -=1;
-    }
-
     public void setType(int type) {
         this.type = type;
     }
 
+    public FileNDN getFile() {
+        return file;
+    }
+
     public void setFile(FileNDN file) {
         this.file = file;
+    }
+
+    public void decrementTtl() {
+        this.ttl -= 1;
     }
 }
