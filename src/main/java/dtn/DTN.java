@@ -16,9 +16,10 @@ public class DTN {
     private static DTN instance = null;
     private final Cache cache;
     private final String name;
-    private ReentrantLock lock = new ReentrantLock();
-    private final Map<String, Message> postPendent = new HashMap<>(); //messageID
+    private final Map<String, Message> postPendent = new HashMap<>();
+    private final List<String> postsReceived = new ArrayList<>();
     private final List<String> interestsSent = new ArrayList<>();
+    private ReentrantLock lock = new ReentrantLock();
 
     private DTN(String name) {
         this.name = name;
@@ -99,7 +100,6 @@ public class DTN {
                     cache.getFiles().get(message.getFile().getName()));
 
 
-
             System.out.println("I have the file!");
             System.out.println("Waiting 3 seconds for testing dtn!");
             try {
@@ -107,7 +107,7 @@ public class DTN {
             } catch (InterruptedException e) {
                 System.out.println("Can't sleep anymore!");
             }
-            postPendent.put(response.getId(),response);
+            postPendent.put(response.getId(), response);
             sendPost(response);
         } else {
             if (!interestsSent.contains(message.getId())) {
@@ -126,7 +126,7 @@ public class DTN {
     //tambem reencaminhar post
     public void sendPost(Message message) {
         try {
-            System.out.println("Send a post!"+ message.getPath());
+            System.out.println("Send a post!" + message.getPath());
             message.send(message.getPath().get(message.getPath().size() - 1));
         } catch (IOException e) {
             System.out.println("Cannot send Post! Retrying later.");
@@ -134,29 +134,33 @@ public class DTN {
     }
 
     public void receivePost(Message message) {
-        System.out.println("Receive a post! "+ message.getPath());
+        System.out.println("Receive a post! " + message.getPath());
         if (message.getPath().size() == 0) {
-            cache.addFile(message.getFile());
-            try {
-                message.getFile().saveFile();
-            } catch (IOException e) {
-                System.out.println("Error downloading file!");
+            if (postsReceived.contains(message.getId())) {
+                System.out.println("Post ignored!");
+            } else {
+                cache.addFile(message.getFile());
+                try {
+                    message.getFile().saveFile();
+                } catch (IOException e) {
+                    System.out.println("Error downloading file!");
+                }
             }
-        }else {
-            postPendent.put(message.getId(),message);
+        } else {
+            postPendent.put(message.getId(), message);
             sendPost(message);
         }
     }
 
-    public void retransmit(){
-        new Thread(() ->{
-            while (true){
+    public void retransmit() {
+        new Thread(() -> {
+            while (true) {
                 try {
                     lock.lock();
                     for (Message m : postPendent.values()) {
                         try {
-                            System.out.println("Trying to retransmit to "+m.getPath().get(m.getPath().size()-1));
-                            m.send(m.getPath().get(m.getPath().size()-1));
+                            System.out.println("Trying to retransmit to " + m.getPath().get(m.getPath().size() - 1));
+                            m.send(m.getPath().get(m.getPath().size() - 1));
                         } catch (IOException e) {
                             System.out.println("Cannot retransmit! Trying later.");
                         }
