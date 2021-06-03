@@ -18,4 +18,3 @@ p2p/Message.class
 services/Multiplexer.class
 dtn/Name.class
 Menu.class
-dtn/FileTransfer.class
