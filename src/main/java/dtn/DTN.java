@@ -90,7 +90,6 @@ public class DTN {
 
 
     public void receiveInterest(Message message) {
-        System.out.println("Receive a interest!");
         if (cache.containsFile(message.getFile())) {
             List<InetAddress> path = message.getPath();
             Message response = new Message(message.getId(),
@@ -102,6 +101,12 @@ public class DTN {
 
 
             System.out.println("I have the file!");
+            System.out.println("Waiting 3 seconds for testing dtn!");
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                System.out.println("Can't sleep anymore!");
+            }
             postPendent.put(message.getId(),message);
             sendPost(response);
         } else {
@@ -120,16 +125,6 @@ public class DTN {
 
     //tambem reencaminhar post
     public void sendPost(Message message) {
-        if(message.getPath().size() == 1){
-            cache.addFile(message.getFile());
-            System.out.println("Waiting 3 seconds for testing dtn!");
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                System.out.println("Can't sleep anymore!");
-            }
-        }
-
         try {
             System.out.println("Send a post!"+ message.getPath());
             message.send(message.getPath().get(message.getPath().size() - 1));
@@ -147,7 +142,7 @@ public class DTN {
             } catch (IOException e) {
                 System.out.println("Error downloading file!");
             }
-        }else if (message.getPath().size() > 1) {
+        }else {
             postPendent.put(message.getId(),message);
             sendPost(message);
         }

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Message implements Serializable {
     private String id;
-    private List<InetAddress> path; //o primeiro é a origem
+    private List<InetAddress> path;
     private int ttl;
     private int type;
     private FileNDN file;
